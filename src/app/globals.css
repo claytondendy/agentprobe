@@ -11,3 +11,8 @@
 .hairline-border {
   border: 0.5px solid #e5e7eb;
 }
+
+@keyframes slideLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-400px); }
+}

@@ -27,6 +27,7 @@ export default function NewScanPage() {
   const [intensity, setIntensity] = useState<"low" | "medium" | "high">("medium");
   const [modules, setModules] = useState<ScanModule[]>(allModules.map((m) => m.id));
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const toggleModule = (id: ScanModule) => {
     setModules((prev) => prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]);
@@ -34,6 +35,7 @@ export default function NewScanPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name.trim()) { setError("Give your agent a name so you can find it later."); return; }
     setSubmitting(true);
     const res = await fetch("/api/scan", {
       method: "POST",
@@ -59,11 +61,13 @@ export default function NewScanPage() {
           <div className="max-w-4xl mx-auto">
             <h1 className="text-3xl font-bold text-charcoal mb-8 tracking-tight font-headline">New Scan Configuration</h1>
             <div className="bg-white hairline-border rounded-sm p-8">
-              <form onSubmit={handleSubmit} className="space-y-8">
+              <form onSubmit={handleSubmit} className="space-y-8" noValidate>
                 <div>
                   <label className="block text-sm font-medium text-charcoal mb-2">Agent Name</label>
-                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} required
+                  <input type="text" value={name} onChange={(e) => { setName(e.target.value); setError(""); }}
+                    placeholder="e.g., Customer Service Bot v2"
                     className="w-full md:w-1/2 rounded-sm border-hairline shadow-sm focus:border-charcoal focus:ring-charcoal text-sm py-2 px-3" />
+                  {error && <p className="text-xs text-red-600 mt-2">{error}</p>}
                 </div>
 
                 <div>
