@@ -87,7 +87,18 @@ export default function NewScanPage() {
                 {mode === "prompt" && (
                   <div>
                     <label className="block text-sm font-medium text-charcoal mb-2">System Prompt</label>
-                    <p className="text-xs text-on-surface-variant mb-3">This is the hidden instructions that tell your AI agent how to behave (e.g., your CLAUDE.md, ChatGPT custom instructions, or a customer service bot's system message). AgentProbe will simulate an agent with this prompt and run adversarial attacks against it.</p>
+                    <p className="text-xs text-on-surface-variant mb-3">
+                      A system prompt is the hidden instructions that define how an AI agent behaves. Every AI agent has one. Common examples:
+                    </p>
+                    <ul className="text-xs text-on-surface-variant mb-3 list-disc pl-5 space-y-1">
+                      <li><span className="font-semibold text-charcoal">CLAUDE.md</span> files in Claude Code projects (the instructions Claude follows when working in your repo)</li>
+                      <li><span className="font-semibold text-charcoal">Custom Instructions</span> in ChatGPT (Settings &gt; Personalization &gt; Custom Instructions)</li>
+                      <li><span className="font-semibold text-charcoal">System messages</span> in API calls (the "system" role in OpenAI, Anthropic, or other LLM API requests)</li>
+                      <li><span className="font-semibold text-charcoal">Bot configuration prompts</span> for customer service agents, internal tools, or any AI-powered product</li>
+                    </ul>
+                    <p className="text-xs text-on-surface-variant mb-3">
+                      Paste the full text of these instructions below. AgentProbe will simulate an agent running with this prompt and test whether attackers can override it, extract it, or exploit it.
+                    </p>
                     <textarea value={systemPrompt} onChange={(e) => setSystemPrompt(e.target.value)} rows={8}
                       placeholder="Paste your AI agent's system prompt here..."
                       className="w-full rounded-sm border-hairline shadow-sm focus:border-charcoal focus:ring-charcoal text-sm py-2 px-3 font-mono" />

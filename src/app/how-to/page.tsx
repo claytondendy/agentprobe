@@ -13,7 +13,7 @@ const steps = [
     num: "02",
     icon: "content_paste",
     title: "Paste your configuration",
-    desc: "For Prompt Scanner, paste your AI agent's system prompt. For MCP Audit, paste the JSON tool definitions from your MCP server. For Skill Scanner, paste the skill's markdown content.",
+    desc: "For Prompt Scanner, paste your agent's system prompt: this is the hidden instructions that tell the AI how to behave. Common examples include CLAUDE.md files (Claude Code), Custom Instructions (ChatGPT), system messages in API calls, or any bot configuration prompt. For MCP Audit, paste the JSON tool definitions from your MCP server. For Skill Scanner, paste the skill's full markdown content.",
   },
   {
     num: "03",
@@ -46,10 +46,10 @@ const modes = [
     icon: "terminal",
     title: "Prompt Scanner",
     href: "/scan/new?mode=prompt",
-    what: "Tests your AI agent's system prompt by simulating the agent and running adversarial attacks against it.",
-    when: "Before deploying any AI agent that uses a system prompt. Run it during development, before code review, and after any prompt changes.",
-    how: "AgentProbe creates a temporary agent using your system prompt, then fires 18+ adversarial probes across 5 categories. A separate Judge LLM evaluates whether each attack succeeded.",
-    finds: "Prompt injection vulnerabilities, system prompt leakage, jailbreak susceptibility, unauthorized action compliance, and hardcoded secrets (API keys, passwords, internal URLs).",
+    what: "Tests your AI agent's system prompt by simulating the agent and running adversarial attacks against it. A system prompt is the hidden instructions that define an agent's behavior, such as a CLAUDE.md file in Claude Code, Custom Instructions in ChatGPT, the 'system' role in LLM API calls, or any configuration prompt for a chatbot or AI-powered tool.",
+    when: "Before deploying any AI agent. Run it when writing a new CLAUDE.md, configuring a ChatGPT Custom GPT, building a customer service bot, or setting up any LLM-powered product. Re-scan after every prompt change.",
+    how: "Paste the full text of your system prompt (copy it from your CLAUDE.md, API code, or bot configuration). AgentProbe creates a temporary agent using that prompt, then fires 18+ adversarial probes across 5 categories. A separate Judge LLM evaluates whether each attack succeeded or failed.",
+    finds: "Prompt injection vulnerabilities, system prompt leakage (attackers extracting your instructions), jailbreak susceptibility, unauthorized action compliance, and hardcoded secrets like API keys, passwords, database strings, and internal URLs.",
   },
   {
     icon: "hub",

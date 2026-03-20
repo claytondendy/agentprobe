@@ -13,10 +13,8 @@ export function Footer() {
             <Link href="/about" className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-charcoal transition-colors">About</Link>
           </div>
         </div>
-        <div className="flex space-x-4">
-          <div className="px-3 py-1 bg-surface-container rounded-full text-[10px] font-bold text-on-surface-variant">
-            SYSTEM STATUS: OPERATIONAL
-          </div>
+        <div className="text-[10px] text-on-surface-variant">
+          Open source AI agent security scanner
         </div>
       </div>
     </footer>
