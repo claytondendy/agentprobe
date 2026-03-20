@@ -3,12 +3,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { href: "/", label: "Dashboard" },
-  { href: "/scan/new", label: "Scans" },
+  { href: "/", label: "Dashboard", icon: "space_dashboard" },
+  { href: "/scan/new", label: "New Scan", icon: "radar" },
 ];
 
 export function Nav() {
   const pathname = usePathname();
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
+
   return (
     <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b-[0.5px] border-hairline shadow-[0_20px_40px_rgba(26,26,46,0.04)]">
       <div className="flex justify-between items-center h-16 px-8 w-full">
@@ -21,12 +26,13 @@ export function Nav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={
-                  pathname === item.href
+                className={`flex items-center gap-1.5 ${
+                  isActive(item.href)
                     ? "text-charcoal font-semibold border-b-2 border-charcoal pb-1"
                     : "text-slate-500 hover:text-charcoal transition-colors"
-                }
+                }`}
               >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>{item.icon}</span>
                 {item.label}
               </Link>
             ))}
@@ -35,8 +41,9 @@ export function Nav() {
         <div className="flex items-center space-x-4">
           <Link
             href="/scan/new"
-            className="bg-charcoal text-white px-5 py-2 text-xs font-bold rounded-sm active:scale-95 transition-transform"
+            className="bg-charcoal text-white px-5 py-2 text-xs font-bold rounded-sm active:scale-95 transition-transform flex items-center gap-2"
           >
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
             New Scan
           </Link>
         </div>
