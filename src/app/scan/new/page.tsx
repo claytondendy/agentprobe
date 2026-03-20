@@ -22,6 +22,7 @@ export default function NewScanPage() {
   const [name, setName] = useState("");
   const [mode, setMode] = useState<ScanMode>(initialMode);
   const [systemPrompt, setSystemPrompt] = useState("");
+  const [mcpConfig, setMcpConfig] = useState("");
   const [apiEndpoint, setApiEndpoint] = useState("");
   const [intensity, setIntensity] = useState<"low" | "medium" | "high">("medium");
   const [modules, setModules] = useState<ScanModule[]>(allModules.map((m) => m.id));
@@ -37,7 +38,7 @@ export default function NewScanPage() {
     const res = await fetch("/api/scan", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, mode, systemPrompt, apiEndpoint, modules, intensity }),
+      body: JSON.stringify({ name, mode, systemPrompt: mode === "mcp" ? mcpConfig : systemPrompt, apiEndpoint, modules, intensity }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -96,10 +97,12 @@ export default function NewScanPage() {
                 )}
 
                 {mode === "mcp" && (
-                  <div className="bg-slate-50 hairline-border rounded-sm p-6 text-center">
-                    <span className="material-symbols-outlined text-on-surface-variant mb-2" style={{ fontSize: 32 }}>hub</span>
-                    <p className="text-sm font-medium text-on-surface-variant">MCP Audit mode coming soon.</p>
-                    <p className="text-xs text-on-surface-variant mt-1">Use Prompt Scanner to test your agent today.</p>
+                  <div>
+                    <label className="block text-sm font-medium text-charcoal mb-2">MCP Tool Configuration (JSON)</label>
+                    <p className="text-xs text-on-surface-variant mb-3">Paste your MCP server's tool definitions. AgentProbe will analyze permissions, dangerous capabilities, and injection attack surfaces.</p>
+                    <textarea value={mcpConfig} onChange={(e) => setMcpConfig(e.target.value)} rows={10}
+                      placeholder={'[\n  {\n    "name": "send_email",\n    "description": "Send email to any address",\n    "parameters": { "to": "string", "subject": "string", "body": "string" }\n  },\n  {\n    "name": "read_file",\n    "description": "Read any file from the filesystem",\n    "parameters": { "path": "string" }\n  }\n]'}
+                      className="w-full rounded-sm border-hairline shadow-sm focus:border-charcoal focus:ring-charcoal text-sm py-2 px-3 font-mono" />
                   </div>
                 )}
 

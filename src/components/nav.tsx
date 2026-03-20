@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 const navItems = [
   { href: "/", label: "Dashboard", icon: "space_dashboard" },
   { href: "/scan/new", label: "New Scan", icon: "radar" },
+  { href: "/benchmarks", label: "Benchmarks", icon: "verified" },
+  { href: "/about", label: "About", icon: "info" },
 ];
 
 export function Nav() {
@@ -37,15 +39,6 @@ export function Nav() {
               </Link>
             ))}
           </div>
-        </div>
-        <div className="flex items-center space-x-4">
-          <Link
-            href="/scan/new"
-            className="bg-charcoal text-white px-5 py-2 text-xs font-bold rounded-sm active:scale-95 transition-transform flex items-center gap-2"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
-            New Scan
-          </Link>
         </div>
       </div>
     </nav>

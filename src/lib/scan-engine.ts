@@ -5,6 +5,7 @@ import { dataExfiltrationProbes } from "./probes/data-exfiltration";
 import { jailbreakProbes } from "./probes/jailbreak";
 import { excessiveAgencyProbes } from "./probes/excessive-agency";
 import { analyzeSensitiveData } from "./probes/sensitive-data";
+import { analyzeMcpConfig } from "./mcp-analyzer";
 import { evaluateProbe } from "./evaluator";
 import { gradeModule } from "./grader";
 
@@ -43,6 +44,30 @@ export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressE
     return sum + (MODULE_PROBES[mod]?.length || 0);
   }, 0);
   let completedProbes = 0;
+
+  // MCP mode: run static analysis on tool config instead of conversational probes
+  if (config.mode === "mcp" && config.systemPrompt) {
+    const mcpResults = analyzeMcpConfig(config.systemPrompt);
+    const moduleResult: ModuleResult = {
+      module: "excessive-agency",
+      label: "MCP Tool Audit",
+      grade: gradeModule(mcpResults.filter((r) => r.succeeded).length, mcpResults.length),
+      probeResults: mcpResults,
+      attacksSucceeded: mcpResults.filter((r) => r.succeeded).length,
+      totalAttacks: mcpResults.length,
+    };
+    moduleResults.push(moduleResult);
+
+    yield {
+      type: "module-complete",
+      message: `MCP Tool Audit: ${moduleResult.grade}`,
+      moduleResult,
+      progress: 100,
+    };
+
+    yield { type: "scan-complete", message: "Scan complete.", progress: 100 };
+    return;
+  }
 
   for (const mod of config.modules) {
     if (mod === "sensitive-data" && config.systemPrompt) {

@@ -5,6 +5,8 @@ import Link from "next/link";
 const sidebarItems = [
   { href: "/", icon: "space_dashboard", label: "Dashboard" },
   { href: "/scan/new", icon: "radar", label: "New Scan" },
+  { href: "/benchmarks", icon: "verified", label: "Benchmarks" },
+  { href: "/about", icon: "info", label: "About" },
 ];
 
 export function Sidebar() {

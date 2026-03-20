@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { Sidebar } from "@/components/sidebar";
@@ -70,14 +71,11 @@ export default function ScanResultsPage() {
           </div>
 
           <footer className="mt-24 max-w-5xl flex justify-end items-center gap-4">
-            <button className="px-6 py-2.5 border-[0.5px] border-hairline bg-white text-charcoal text-xs font-bold rounded-sm hover:bg-slate-50 transition-all flex items-center gap-2 uppercase tracking-widest">
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>picture_as_pdf</span>
-              Export PDF
-            </button>
-            <button onClick={() => window.location.reload()}
-              className="px-10 py-2.5 bg-charcoal text-white text-xs font-bold rounded-sm hover:opacity-90 active:scale-95 transition-all uppercase tracking-[0.15em]">
-              Re-scan
-            </button>
+            <Link href="/scan/new"
+              className="px-10 py-2.5 bg-charcoal text-white text-xs font-bold rounded-sm hover:opacity-90 active:scale-95 transition-all uppercase tracking-[0.15em] flex items-center gap-2">
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
+              New Scan
+            </Link>
           </footer>
         </main>
       </div>
