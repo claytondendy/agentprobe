@@ -8,7 +8,7 @@ import { ScanResult } from "@/lib/types";
 
 const modeCards = [
   { num: "01", icon: "terminal", title: "Prompt Scanner", desc: "Test system prompts for injection, jailbreak, data leakage, and hardcoded secrets before deploying.", cta: "Scan a Prompt", href: "/scan/new?mode=prompt" },
-  { num: "02", icon: "auto_fix_high", title: "Skill Scanner", desc: "Evaluate Claude Code skill files for security risks, injection vulnerabilities, and sensitive data exposure.", cta: "Scan a Skill", href: "/scan/new?mode=skill" },
+  { num: "02", icon: "auto_fix_high", title: "Skill Scanner", desc: "Evaluate AI agent skill files and plugin definitions for security risks, injection vulnerabilities, and sensitive data exposure.", cta: "Scan a Skill", href: "/scan/new?mode=skill" },
   { num: "03", icon: "hub", title: "MCP Audit", desc: "Analyze MCP tool permissions for dangerous capabilities, risky combinations, and excessive agency.", cta: "Audit Tools", href: "/scan/new?mode=mcp" },
 ];
 

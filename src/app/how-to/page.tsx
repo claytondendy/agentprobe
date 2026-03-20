@@ -7,13 +7,13 @@ const steps = [
     num: "01",
     icon: "edit_note",
     title: "Choose your scan mode",
-    desc: "Select Prompt Scanner to test a system prompt, MCP Audit to analyze tool permissions, or Skill Scanner to evaluate a Claude Code skill file.",
+    desc: "Select Prompt Scanner to test a system prompt, MCP Audit to analyze tool permissions, or Skill Scanner to evaluate an AI agent skill or plugin definition.",
   },
   {
     num: "02",
     icon: "content_paste",
     title: "Paste your configuration",
-    desc: "For Prompt Scanner, paste your agent's system prompt: this is the hidden instructions that tell the AI how to behave. Common examples include CLAUDE.md files (Claude Code), Custom Instructions (ChatGPT), system messages in API calls, or any bot configuration prompt. For MCP Audit, paste the JSON tool definitions from your MCP server. For Skill Scanner, paste the skill's full markdown content.",
+    desc: "For Prompt Scanner, paste your agent's system prompt: this is the hidden instructions that tell the AI how to behave. Common examples include CLAUDE.md files, ChatGPT Custom Instructions, API system messages, or any bot configuration prompt. For MCP Audit, paste the JSON tool definitions from your MCP server. For Skill Scanner, paste the full content of any skill, plugin, or tool definition from any AI platform.",
   },
   {
     num: "03",
@@ -64,10 +64,10 @@ const modes = [
     icon: "auto_fix_high",
     title: "Skill Scanner",
     href: "/scan/new?mode=prompt",
-    what: "Evaluates Claude Code skill files (.md) for security risks by treating the skill content as a system prompt and testing it for injection vulnerabilities and sensitive data exposure.",
-    when: "Before deploying custom skills in Claude Code, especially skills that interact with external systems, handle credentials, or execute shell commands.",
-    how: "The skill's markdown content is fed to the Prompt Scanner engine as a system prompt. All 5 attack modules run against it, testing whether an attacker could hijack the skill's behavior through crafted user input.",
-    finds: "Skills that leak their own instructions, skills vulnerable to goal hijacking via user input, hardcoded credentials or internal paths in skill definitions, and skills that can be tricked into executing unintended actions.",
+    what: "Evaluates AI agent skill files, plugin definitions, and tool configurations for security risks by treating the content as a system prompt and testing it for injection vulnerabilities and sensitive data exposure. Works with any platform: Claude Code skills, OpenAI GPT Actions, Copilot Extensions, LangChain tools, CrewAI agents, or custom agent definitions.",
+    when: "Before deploying any custom skill, plugin, or tool definition to an AI agent, especially those that interact with external systems, handle credentials, or execute shell commands.",
+    how: "The skill or plugin content is fed to the Prompt Scanner engine as a system prompt. All 5 attack modules run against it, testing whether an attacker could hijack the skill's behavior through crafted user input.",
+    finds: "Skills that leak their own instructions, plugins vulnerable to goal hijacking via user input, hardcoded credentials or internal paths in definitions, and configurations that can be tricked into executing unintended actions.",
   },
 ];
 

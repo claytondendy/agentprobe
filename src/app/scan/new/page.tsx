@@ -71,7 +71,7 @@ export default function NewScanPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {([
                       { id: "prompt" as ScanMode, icon: "terminal", label: "Prompt Scanner", desc: "Test a system prompt for injection, jailbreak, and data leakage vulnerabilities." },
-                      { id: "skill" as ScanMode, icon: "auto_fix_high", label: "Skill Scanner", desc: "Evaluate a Claude Code skill file for security risks and injection vulnerabilities." },
+                      { id: "skill" as ScanMode, icon: "auto_fix_high", label: "Skill Scanner", desc: "Evaluate AI agent skill files and plugin definitions for security risks and injection vulnerabilities." },
                       { id: "mcp" as ScanMode, icon: "hub", label: "MCP Audit", desc: "Analyze MCP tool permissions for dangerous capabilities and risky combinations." },
                     ]).map((m) => (
                       <button key={m.id} type="button" onClick={() => setMode(m.id)}
@@ -108,7 +108,9 @@ export default function NewScanPage() {
                 {mode === "skill" && (
                   <div>
                     <label className="block text-sm font-medium text-charcoal mb-2">Skill File Content</label>
-                    <p className="text-xs text-on-surface-variant mb-3">Paste the full markdown content of a Claude Code skill file. AgentProbe treats skill definitions as system prompts and tests whether an attacker could hijack the skill's behavior, extract its instructions, or exploit its tool access through crafted user input.</p>
+                    <p className="text-xs text-on-surface-variant mb-3">
+                      Paste the full content of any AI agent skill, plugin, or tool definition. This works with skill files from any platform: Claude Code skills (.md), OpenAI GPT Actions, Copilot Extensions, LangChain tools, CrewAI agent definitions, or any structured agent configuration. AgentProbe treats the content as a system prompt and tests whether an attacker could hijack the skill's behavior, extract its instructions, or exploit its tool access through crafted user input.
+                    </p>
                     <textarea value={systemPrompt} onChange={(e) => setSystemPrompt(e.target.value)} rows={10}
                       placeholder={"---\nname: my-skill\ndescription: A skill that does something useful\n---\n\n## Instructions\n\nYou are a specialized agent that...\n\n## Tools\n\nYou have access to: Bash, Read, Write..."}
                       className="w-full rounded-sm border-hairline shadow-sm focus:border-charcoal focus:ring-charcoal text-sm py-2 px-3 font-mono" />
@@ -130,7 +132,19 @@ export default function NewScanPage() {
                 {mode === "mcp" && (
                   <div>
                     <label className="block text-sm font-medium text-charcoal mb-2">MCP Tool Configuration (JSON)</label>
-                    <p className="text-xs text-on-surface-variant mb-3">Paste your MCP server's tool definitions. AgentProbe will analyze permissions, dangerous capabilities, and injection attack surfaces.</p>
+                    <p className="text-xs text-on-surface-variant mb-3">
+                      Paste the tool definitions from your MCP (Model Context Protocol) server. This is the JSON that describes what tools your AI agent has access to. AgentProbe analyzes each tool for dangerous capabilities, checks for risky tool combinations, and flags excessive permissions.
+                    </p>
+                    <p className="text-xs text-on-surface-variant mb-3 font-semibold">Where to find this:</p>
+                    <ul className="text-xs text-on-surface-variant mb-3 list-disc pl-5 space-y-1">
+                      <li>In your MCP server code, look for the tool definitions (usually a JSON array with name, description, and parameters)</li>
+                      <li>In Claude Code, check your <span className="font-mono bg-slate-100 px-1">claude_desktop_config.json</span> or MCP server configuration</li>
+                      <li>For OpenAI function calling, use your functions/tools array from the API request</li>
+                      <li>For any agent framework, export the tool registry as JSON</li>
+                    </ul>
+                    <p className="text-xs text-on-surface-variant mb-3">
+                      Format: a JSON array of objects, each with <span className="font-mono bg-slate-100 px-1">name</span>, <span className="font-mono bg-slate-100 px-1">description</span>, and <span className="font-mono bg-slate-100 px-1">parameters</span>.
+                    </p>
                     <textarea value={mcpConfig} onChange={(e) => setMcpConfig(e.target.value)} rows={10}
                       placeholder={'[\n  {\n    "name": "send_email",\n    "description": "Send email to any address",\n    "parameters": { "to": "string", "subject": "string", "body": "string" }\n  },\n  {\n    "name": "read_file",\n    "description": "Read any file from the filesystem",\n    "parameters": { "path": "string" }\n  }\n]'}
                       className="w-full rounded-sm border-hairline shadow-sm focus:border-charcoal focus:ring-charcoal text-sm py-2 px-3 font-mono" />
