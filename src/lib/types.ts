@@ -1,4 +1,4 @@
-export type ScanMode = "prompt" | "redteam" | "mcp";
+export type ScanMode = "prompt" | "redteam" | "mcp" | "skill";
 export type Severity = "critical" | "high" | "medium" | "low" | "info";
 export type Grade = "A" | "B" | "C" | "D" | "F";
 

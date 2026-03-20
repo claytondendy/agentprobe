@@ -45,6 +45,12 @@ export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressE
   }, 0);
   let completedProbes = 0;
 
+  // Skill mode: treat skill content as a system prompt and run all probes
+  // (falls through to the same logic as prompt mode)
+  if (config.mode === "skill" && config.systemPrompt) {
+    config = { ...config, mode: "prompt" };
+  }
+
   // MCP mode: run static analysis on tool config instead of conversational probes
   if (config.mode === "mcp" && config.systemPrompt) {
     const mcpResults = analyzeMcpConfig(config.systemPrompt);

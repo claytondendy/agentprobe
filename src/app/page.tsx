@@ -7,9 +7,9 @@ import { ScanTable } from "@/components/scan-table";
 import { ScanResult } from "@/lib/types";
 
 const modeCards = [
-  { num: "01", icon: "terminal", title: "Prompt Scanner", desc: "Proactive sanitization of system prompts and user inputs to mitigate jailbreak attempts.", cta: "Configure Engine", href: "/scan/new?mode=prompt" },
-  { num: "02", icon: "security", title: "Live Red Team", desc: "Automated adversarial attacks simulating advanced persistent threats against live agents.", cta: "Deploy Agents", href: "/scan/new?mode=redteam" },
-  { num: "03", icon: "hub", title: "MCP Audit", desc: "Deep inspection of Model Context Protocol endpoints and resource permission escalation.", cta: "Inspect Registry", href: "/scan/new?mode=mcp" },
+  { num: "01", icon: "terminal", title: "Prompt Scanner", desc: "Test system prompts for injection, jailbreak, data leakage, and hardcoded secrets before deploying.", cta: "Scan a Prompt", href: "/scan/new?mode=prompt" },
+  { num: "02", icon: "auto_fix_high", title: "Skill Scanner", desc: "Evaluate Claude Code skill files for security risks, injection vulnerabilities, and sensitive data exposure.", cta: "Scan a Skill", href: "/scan/new?mode=skill" },
+  { num: "03", icon: "hub", title: "MCP Audit", desc: "Analyze MCP tool permissions for dangerous capabilities, risky combinations, and excessive agency.", cta: "Audit Tools", href: "/scan/new?mode=mcp" },
 ];
 
 export default function Dashboard() {

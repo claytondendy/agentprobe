@@ -39,6 +39,7 @@ export default function NewScanPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, mode, systemPrompt: mode === "mcp" ? mcpConfig : systemPrompt, apiEndpoint, modules, intensity }),
+
     });
     const data = await res.json();
     if (!res.ok) {
@@ -67,13 +68,18 @@ export default function NewScanPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-charcoal mb-3">Scan Mode</label>
-                  <div className="flex gap-6">
-                    {(["prompt", "redteam", "mcp"] as ScanMode[]).map((m) => (
-                      <label key={m} className="flex items-center">
-                        <input type="radio" name="mode" checked={mode === m} onChange={() => setMode(m)}
-                          className="h-4 w-4 border-hairline text-charcoal focus:ring-charcoal" />
-                        <span className="ml-2 text-sm font-medium text-charcoal capitalize">{m === "redteam" ? "Live Red Team" : m === "mcp" ? "MCP Audit" : "Prompt Scanner"}</span>
-                      </label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {([
+                      { id: "prompt" as ScanMode, icon: "terminal", label: "Prompt Scanner", desc: "Test a system prompt for injection, jailbreak, and data leakage vulnerabilities." },
+                      { id: "skill" as ScanMode, icon: "auto_fix_high", label: "Skill Scanner", desc: "Evaluate a Claude Code skill file for security risks and injection vulnerabilities." },
+                      { id: "mcp" as ScanMode, icon: "hub", label: "MCP Audit", desc: "Analyze MCP tool permissions for dangerous capabilities and risky combinations." },
+                    ]).map((m) => (
+                      <button key={m.id} type="button" onClick={() => setMode(m.id)}
+                        className={`text-left p-4 rounded-sm transition-all ${mode === m.id ? "bg-charcoal text-white" : "bg-white hairline-border text-charcoal hover:bg-slate-50"}`}>
+                        <span className={`material-symbols-outlined mb-2 ${mode === m.id ? "text-white" : "text-charcoal"}`} style={{ fontSize: 24 }}>{m.icon}</span>
+                        <div className={`text-sm font-bold mb-1 ${mode === m.id ? "text-white" : "text-charcoal"}`}>{m.label}</div>
+                        <div className={`text-xs leading-relaxed ${mode === m.id ? "text-slate-300" : "text-on-surface-variant"}`}>{m.desc}</div>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -81,18 +87,32 @@ export default function NewScanPage() {
                 {mode === "prompt" && (
                   <div>
                     <label className="block text-sm font-medium text-charcoal mb-2">System Prompt</label>
+                    <p className="text-xs text-on-surface-variant mb-3">This is the hidden instructions that tell your AI agent how to behave (e.g., your CLAUDE.md, ChatGPT custom instructions, or a customer service bot's system message). AgentProbe will simulate an agent with this prompt and run adversarial attacks against it.</p>
                     <textarea value={systemPrompt} onChange={(e) => setSystemPrompt(e.target.value)} rows={8}
                       placeholder="Paste your AI agent's system prompt here..."
                       className="w-full rounded-sm border-hairline shadow-sm focus:border-charcoal focus:ring-charcoal text-sm py-2 px-3 font-mono" />
                   </div>
                 )}
 
-                {mode === "redteam" && (
+                {mode === "skill" && (
                   <div>
-                    <label className="block text-sm font-medium text-charcoal mb-2">API Endpoint (OpenAI-compatible)</label>
-                    <input type="url" value={apiEndpoint} onChange={(e) => setApiEndpoint(e.target.value)}
-                      placeholder="https://api.example.com/v1/chat/completions"
-                      className="w-full md:w-2/3 rounded-sm border-hairline shadow-sm focus:border-charcoal focus:ring-charcoal text-sm py-2 px-3" />
+                    <label className="block text-sm font-medium text-charcoal mb-2">Skill File Content</label>
+                    <p className="text-xs text-on-surface-variant mb-3">Paste the full markdown content of a Claude Code skill file. AgentProbe treats skill definitions as system prompts and tests whether an attacker could hijack the skill's behavior, extract its instructions, or exploit its tool access through crafted user input.</p>
+                    <textarea value={systemPrompt} onChange={(e) => setSystemPrompt(e.target.value)} rows={10}
+                      placeholder={"---\nname: my-skill\ndescription: A skill that does something useful\n---\n\n## Instructions\n\nYou are a specialized agent that...\n\n## Tools\n\nYou have access to: Bash, Read, Write..."}
+                      className="w-full rounded-sm border-hairline shadow-sm focus:border-charcoal focus:ring-charcoal text-sm py-2 px-3 font-mono" />
+                  </div>
+                )}
+
+                {mode === "redteam" && (
+                  <div className="bg-slate-50 hairline-border rounded-sm p-6">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: 24 }}>security</span>
+                      <span className="text-sm font-bold text-charcoal">Live Red Team</span>
+                    </div>
+                    <p className="text-sm text-on-surface-variant leading-relaxed">
+                      Live Red Team mode connects to a running AI agent via an OpenAI-compatible API endpoint and probes it directly, without needing the system prompt. This is the closest simulation to a real attacker. Coming in the next release.
+                    </p>
                   </div>
                 )}
 
