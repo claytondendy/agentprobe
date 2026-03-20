@@ -109,7 +109,10 @@ export default function NewScanPage() {
                   <div>
                     <label className="block text-sm font-medium text-charcoal mb-2">Skill File Content</label>
                     <p className="text-xs text-on-surface-variant mb-3">
-                      Paste the full content of any AI agent skill, plugin, or tool definition. This works with skill files from any platform: Claude Code skills (.md), OpenAI GPT Actions, Copilot Extensions, LangChain tools, CrewAI agent definitions, or any structured agent configuration. AgentProbe treats the content as a system prompt and tests whether an attacker could hijack the skill's behavior, extract its instructions, or exploit its tool access through crafted user input.
+                      Paste the full content of any AI agent skill, plugin, or tool definition. Skills are reusable instruction sets that extend an AI agent's capabilities, often invoked as slash commands (e.g., <span className="font-mono bg-slate-100 px-1">/commit</span>, <span className="font-mono bg-slate-100 px-1">/review-pr</span>, <span className="font-mono bg-slate-100 px-1">/deploy</span>). This works with skill files from any platform: Claude Code skills (.md), OpenAI GPT Actions, Copilot Extensions, LangChain tools, CrewAI agent definitions, or any structured agent configuration.
+                    </p>
+                    <p className="text-xs text-on-surface-variant mb-3">
+                      AgentProbe treats the skill content as a system prompt and tests whether an attacker could hijack the skill's behavior, extract its instructions, or exploit its tool access through crafted user input.
                     </p>
                     <textarea value={systemPrompt} onChange={(e) => setSystemPrompt(e.target.value)} rows={10}
                       placeholder={"---\nname: my-skill\ndescription: A skill that does something useful\n---\n\n## Instructions\n\nYou are a specialized agent that...\n\n## Tools\n\nYou have access to: Bash, Read, Write..."}
