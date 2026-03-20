@@ -5,6 +5,7 @@ import { dataExfiltrationProbes } from "./probes/data-exfiltration";
 import { jailbreakProbes } from "./probes/jailbreak";
 import { excessiveAgencyProbes } from "./probes/excessive-agency";
 import { analyzeSensitiveData } from "./probes/sensitive-data";
+import { misinformationProbes } from "./probes/misinformation";
 import { analyzeMcpConfig } from "./mcp-analyzer";
 import { evaluateProbe } from "./evaluator";
 import { gradeModule } from "./grader";
@@ -12,7 +13,7 @@ import { gradeModule } from "./grader";
 const client = new Anthropic();
 
 const MODULE_PROBES: Record<ScanModule, Probe[]> = {
-  "prompt-injection": promptInjectionProbes,
+  "prompt-injection": [...promptInjectionProbes, ...misinformationProbes],
   "data-exfiltration": dataExfiltrationProbes,
   "jailbreak": jailbreakProbes,
   "excessive-agency": excessiveAgencyProbes,

@@ -16,12 +16,19 @@ const DANGEROUS_TOOLS = [
   { pattern: /(http|web|url|fetch|request|api)[_\s]?(get|post|call|request|fetch)/i, risk: "Can make external HTTP requests (data exfiltration vector)", severity: "high" as const },
   { pattern: /(admin|root|sudo|privilege|permission|role)/i, risk: "References elevated privileges", severity: "medium" as const },
   { pattern: /(database|db|sql|mongo|redis|postgres)/i, risk: "Direct database access", severity: "medium" as const },
+  { pattern: /(loop|recursive|retry|repeat|schedule|cron|interval)/i, risk: "Can create recurring or looping operations (unbounded consumption risk)", severity: "high" as const },
+  { pattern: /(log|audit|monitor|trace|observe)/i, risk: "References logging/observability (check if adequate)", severity: "info" as const },
+  { pattern: /(network|socket|tcp|udp|dns|proxy|vpn|tunnel)/i, risk: "Direct network access", severity: "high" as const },
+  { pattern: /(embed|vector|rag|retriev|search|index)/i, risk: "Accesses vector/embedding stores (poisoning risk)", severity: "medium" as const },
+  { pattern: /(spawn|fork|subprocess|child|agent|delegate)/i, risk: "Can spawn sub-processes or delegate to other agents (cascading failure risk)", severity: "high" as const },
 ];
 
 const DANGEROUS_COMBOS = [
   { tools: [/read/i, /(send|http|web|fetch|upload)/i], risk: "Read + Send: Can read internal data and exfiltrate it externally", severity: "critical" as const },
   { tools: [/(read|get)/i, /(write|modify|update)/i], risk: "Read + Write: Can copy sensitive data between resources", severity: "high" as const },
   { tools: [/(execute|run|eval)/i, /(http|web|fetch)/i], risk: "Execute + HTTP: Can run code and communicate results externally", severity: "critical" as const },
+  { tools: [/(spawn|fork|agent|delegate)/i, /(spawn|fork|agent|delegate)/i], risk: "Agent spawning + Agent spawning: Cascading failure risk from recursive agent delegation", severity: "critical" as const },
+  { tools: [/(loop|retry|schedule)/i, /(http|api|fetch)/i], risk: "Loop + HTTP: Unbounded consumption risk from recursive API calls", severity: "critical" as const },
 ];
 
 export function analyzeMcpConfig(configJson: string): ProbeResult[] {

@@ -37,19 +37,19 @@ export default function AboutPage() {
                 <li className="flex items-start gap-3">
                   <span className="material-symbols-outlined text-charcoal mt-0.5" style={{ fontSize: 20 }}>terminal</span>
                   <div>
-                    <span className="font-semibold text-charcoal">Agent Scanner</span> — Test CLAUDE.md files, system prompts, custom instructions, and agent configurations for vulnerabilities.
+                    <span className="font-semibold text-charcoal">Agent Scanner</span> — Test CLAUDE.md files, system prompts, custom instructions, and agent configurations for injection, jailbreak, data leakage, and hardcoded secrets.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-charcoal mt-0.5" style={{ fontSize: 20 }}>security</span>
+                  <span className="material-symbols-outlined text-charcoal mt-0.5" style={{ fontSize: 20 }}>auto_fix_high</span>
                   <div>
-                    <span className="font-semibold text-charcoal">Live Red Team</span> — Probe a live AI agent via API endpoint or manual relay. (Coming soon)
+                    <span className="font-semibold text-charcoal">Skill Scanner</span> — Evaluate skill files, plugin definitions, slash commands, GPT Actions, and tool configurations from any AI platform for hijacking and instruction leakage.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="material-symbols-outlined text-charcoal mt-0.5" style={{ fontSize: 20 }}>hub</span>
                   <div>
-                    <span className="font-semibold text-charcoal">MCP Scanner</span> — Analyze tool permissions, dangerous capabilities, and risky tool combinations in MCP server configurations.
+                    <span className="font-semibold text-charcoal">MCP Scanner</span> — Analyze MCP tool definitions, function calling schemas, and agent tool registries for dangerous capabilities, risky combinations, and excessive permissions.
                   </div>
                 </li>
               </ul>
