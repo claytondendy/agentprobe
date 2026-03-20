@@ -70,9 +70,9 @@ export default function NewScanPage() {
                   <label className="block text-sm font-medium text-charcoal mb-3">Scan Mode</label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {([
-                      { id: "prompt" as ScanMode, icon: "terminal", label: "Prompt Scanner", desc: "Test a system prompt for injection, jailbreak, and data leakage vulnerabilities." },
-                      { id: "skill" as ScanMode, icon: "auto_fix_high", label: "Skill Scanner", desc: "Evaluate AI agent skill files and plugin definitions for security risks and injection vulnerabilities." },
-                      { id: "mcp" as ScanMode, icon: "hub", label: "MCP Audit", desc: "Analyze MCP tool permissions for dangerous capabilities and risky combinations." },
+                      { id: "prompt" as ScanMode, icon: "terminal", label: "Agent Scanner", desc: "CLAUDE.md files, system prompts, custom instructions, and agent configurations." },
+                      { id: "skill" as ScanMode, icon: "auto_fix_high", label: "Skill Scanner", desc: "Skill files, plugin definitions, GPT Actions, and tool configurations from any AI platform." },
+                      { id: "mcp" as ScanMode, icon: "hub", label: "MCP Scanner", desc: "MCP tool definitions, function calling schemas, and agent tool registries." },
                     ]).map((m) => (
                       <button key={m.id} type="button" onClick={() => setMode(m.id)}
                         className={`text-left p-4 rounded-sm transition-all ${mode === m.id ? "bg-charcoal text-white" : "bg-white hairline-border text-charcoal hover:bg-slate-50"}`}>

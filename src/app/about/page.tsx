@@ -37,7 +37,7 @@ export default function AboutPage() {
                 <li className="flex items-start gap-3">
                   <span className="material-symbols-outlined text-charcoal mt-0.5" style={{ fontSize: 20 }}>terminal</span>
                   <div>
-                    <span className="font-semibold text-charcoal">Prompt Scanner</span> — Paste a system prompt, test it in a sandbox before deploying.
+                    <span className="font-semibold text-charcoal">Agent Scanner</span> — Test CLAUDE.md files, system prompts, custom instructions, and agent configurations for vulnerabilities.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
@@ -49,7 +49,7 @@ export default function AboutPage() {
                 <li className="flex items-start gap-3">
                   <span className="material-symbols-outlined text-charcoal mt-0.5" style={{ fontSize: 20 }}>hub</span>
                   <div>
-                    <span className="font-semibold text-charcoal">MCP Audit</span> — Analyze Model Context Protocol tool permissions and injection attack surfaces. (Coming soon)
+                    <span className="font-semibold text-charcoal">MCP Scanner</span> — Analyze tool permissions, dangerous capabilities, and risky tool combinations in MCP server configurations.
                   </div>
                 </li>
               </ul>

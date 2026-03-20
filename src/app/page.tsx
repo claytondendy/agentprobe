@@ -7,9 +7,9 @@ import { ScanTable } from "@/components/scan-table";
 import { ScanResult } from "@/lib/types";
 
 const modeCards = [
-  { num: "01", icon: "terminal", title: "Prompt Scanner", desc: "Test system prompts for injection, jailbreak, data leakage, and hardcoded secrets before deploying.", cta: "Scan a Prompt", href: "/scan/new?mode=prompt" },
-  { num: "02", icon: "auto_fix_high", title: "Skill Scanner", desc: "Evaluate AI agent skill files and plugin definitions for security risks, injection vulnerabilities, and sensitive data exposure.", cta: "Scan a Skill", href: "/scan/new?mode=skill" },
-  { num: "03", icon: "hub", title: "MCP Audit", desc: "Analyze MCP tool permissions for dangerous capabilities, risky combinations, and excessive agency.", cta: "Audit Tools", href: "/scan/new?mode=mcp" },
+  { num: "01", icon: "terminal", title: "Agent Scanner", sub: "Agents", desc: "CLAUDE.md files, system prompts, custom instructions, and agent configurations. Test for injection, jailbreak, data leakage, and hardcoded secrets.", cta: "Scan an Agent", href: "/scan/new?mode=prompt" },
+  { num: "02", icon: "auto_fix_high", title: "Skill Scanner", sub: "Skills", desc: "Skill files, plugin definitions, GPT Actions, and tool configurations from any AI platform. Test for hijacking, instruction leakage, and sensitive data.", cta: "Scan a Skill", href: "/scan/new?mode=skill" },
+  { num: "03", icon: "hub", title: "MCP Scanner", sub: "Tools", desc: "MCP server tool definitions, function calling schemas, and agent tool registries. Analyze for dangerous capabilities, risky combinations, and excessive permissions.", cta: "Scan Tools", href: "/scan/new?mode=mcp" },
 ];
 
 export default function Dashboard() {
@@ -35,6 +35,11 @@ export default function Dashboard() {
         </section>
 
         <section className="px-8 max-w-7xl mx-auto mb-32">
+          <div className="mb-8">
+            <h2 className="font-headline text-2xl font-bold text-charcoal tracking-tighter">
+              Scan your <span className="text-on-surface-variant">{modeCards.map((c) => c.sub).join(", ")}</span>
+            </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {modeCards.map((card) => (
               <Link key={card.num} href={card.href} className="group relative p-8 bg-transparent hairline-border rounded-sm hover:bg-charcoal transition-all duration-300 cursor-pointer overflow-hidden">

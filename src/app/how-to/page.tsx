@@ -7,13 +7,13 @@ const steps = [
     num: "01",
     icon: "edit_note",
     title: "Choose your scan mode",
-    desc: "Select Prompt Scanner to test a system prompt, MCP Audit to analyze tool permissions, or Skill Scanner to evaluate an AI agent skill or plugin definition.",
+    desc: "Select Agent Scanner to test a system prompt, MCP Scanner to analyze tool permissions, or Skill Scanner to evaluate an AI agent skill or plugin definition.",
   },
   {
     num: "02",
     icon: "content_paste",
     title: "Paste your configuration",
-    desc: "For Prompt Scanner, paste your agent's system prompt: this is the hidden instructions that tell the AI how to behave. Common examples include CLAUDE.md files, ChatGPT Custom Instructions, API system messages, or any bot configuration prompt. For MCP Audit, paste the JSON tool definitions from your MCP server. For Skill Scanner, paste the full content of any skill, plugin, or tool definition from any AI platform.",
+    desc: "For Agent Scanner, paste your agent's system prompt: this is the hidden instructions that tell the AI how to behave. Common examples include CLAUDE.md files, ChatGPT Custom Instructions, API system messages, or any bot configuration prompt. For MCP Scanner, paste the JSON tool definitions from your MCP server. For Skill Scanner, paste the full content of any skill, plugin, or tool definition from any AI platform.",
   },
   {
     num: "03",
@@ -44,7 +44,7 @@ const steps = [
 const modes = [
   {
     icon: "terminal",
-    title: "Prompt Scanner",
+    title: "Agent Scanner",
     href: "/scan/new?mode=prompt",
     what: "Tests your AI agent's system prompt by simulating the agent and running adversarial attacks against it. A system prompt is the hidden instructions that define an agent's behavior, such as a CLAUDE.md file in Claude Code, Custom Instructions in ChatGPT, the 'system' role in LLM API calls, or any configuration prompt for a chatbot or AI-powered tool.",
     when: "Before deploying any AI agent. Run it when writing a new CLAUDE.md, configuring a ChatGPT Custom GPT, building a customer service bot, or setting up any LLM-powered product. Re-scan after every prompt change.",
@@ -53,7 +53,7 @@ const modes = [
   },
   {
     icon: "hub",
-    title: "MCP Audit",
+    title: "MCP Scanner",
     href: "/scan/new?mode=mcp",
     what: "Analyzes your MCP server's tool definitions for dangerous capabilities, excessive permissions, and risky tool combinations.",
     when: "Before connecting any MCP server to an AI agent. Especially important when agents have access to email, file systems, databases, or external APIs.",
@@ -66,7 +66,7 @@ const modes = [
     href: "/scan/new?mode=prompt",
     what: "Evaluates AI agent skill files, plugin definitions, and tool configurations for security risks by treating the content as a system prompt and testing it for injection vulnerabilities and sensitive data exposure. Works with any platform: Claude Code skills, OpenAI GPT Actions, Copilot Extensions, LangChain tools, CrewAI agents, or custom agent definitions.",
     when: "Before deploying any custom skill, plugin, or tool definition to an AI agent, especially those that interact with external systems, handle credentials, or execute shell commands.",
-    how: "The skill or plugin content is fed to the Prompt Scanner engine as a system prompt. All 5 attack modules run against it, testing whether an attacker could hijack the skill's behavior through crafted user input.",
+    how: "The skill or plugin content is fed to the Agent Scanner engine as a system prompt. All 5 attack modules run against it, testing whether an attacker could hijack the skill's behavior through crafted user input.",
     finds: "Skills that leak their own instructions, plugins vulnerable to goal hijacking via user input, hardcoded credentials or internal paths in definitions, and configurations that can be tricked into executing unintended actions.",
   },
 ];
