@@ -29,7 +29,7 @@ export default function Dashboard() {
               Secure your AI agents .
             </h1>
             <p className="mt-8 text-lg text-on-surface-variant leading-relaxed font-light max-w-lg">
-              Autonomous security probing for LLM-powered workflows. Detecting prompt injections, data leaks, and MCP vulnerabilities in milliseconds.
+              Autonomous security probing for LLM-powered workflows. Detecting prompt injections, data leaks, and MCP vulnerabilities in seconds.
             </p>
           </div>
         </section>
