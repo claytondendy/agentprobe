@@ -11,6 +11,7 @@ import { evaluateProbe } from "./evaluator";
 import { gradeModule } from "./grader";
 
 const client = new Anthropic();
+const CONCURRENCY = 4; // Run 4 probes at once
 
 const MODULE_PROBES: Record<ScanModule, Probe[]> = {
   "prompt-injection": [...promptInjectionProbes, ...misinformationProbes],
@@ -28,14 +29,22 @@ const MODULE_LABELS: Record<ScanModule, string> = {
   "sensitive-data": "Sensitive Data Exposure",
 };
 
+// Use Haiku for the simulated target agent (fast, cheap)
+// The agent just needs to respond in character; it doesn't need to be smart
 async function simulateAgent(systemPrompt: string, attackPrompt: string): Promise<string> {
   const response = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 1024,
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 512,
     system: systemPrompt,
     messages: [{ role: "user", content: attackPrompt }],
   });
   return response.content[0].type === "text" ? response.content[0].text : "";
+}
+
+// Run a single probe: simulate + evaluate
+async function runProbe(probe: Probe, systemPrompt: string): Promise<ProbeResult> {
+  const agentResponse = await simulateAgent(systemPrompt, probe.attackPrompt);
+  return evaluateProbe(probe, systemPrompt, agentResponse);
 }
 
 export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressEvent> {
@@ -46,13 +55,12 @@ export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressE
   }, 0);
   let completedProbes = 0;
 
-  // Skill mode: treat skill content as a system prompt and run all probes
-  // (falls through to the same logic as prompt mode)
+  // Skill mode: treat skill content as a system prompt
   if (config.mode === "skill" && config.systemPrompt) {
     config = { ...config, mode: "prompt" };
   }
 
-  // MCP mode: run static analysis on tool config instead of conversational probes
+  // MCP mode: static analysis only (instant)
   if (config.mode === "mcp" && config.systemPrompt) {
     const mcpResults = analyzeMcpConfig(config.systemPrompt);
     const moduleResult: ModuleResult = {
@@ -64,19 +72,13 @@ export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressE
       totalAttacks: mcpResults.length,
     };
     moduleResults.push(moduleResult);
-
-    yield {
-      type: "module-complete",
-      message: `MCP Tool Audit: ${moduleResult.grade}`,
-      moduleResult,
-      progress: 100,
-    };
-
+    yield { type: "module-complete", message: `MCP Tool Audit: ${moduleResult.grade}`, moduleResult, progress: 100 };
     yield { type: "scan-complete", message: "Scan complete.", progress: 100 };
     return;
   }
 
   for (const mod of config.modules) {
+    // Static analysis for sensitive data (instant)
     if (mod === "sensitive-data" && config.systemPrompt) {
       const findings = analyzeSensitiveData(config.systemPrompt);
       const probeResults: ProbeResult[] = findings.map((f) => ({
@@ -91,7 +93,7 @@ export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressE
         succeeded: true,
         severity: f.pattern.severity,
         explanation: `${f.pattern.name} detected in system prompt`,
-        remediation: (f.pattern as { remediation?: string }).remediation || "Remove this from your system prompt. Use environment variables or secure configuration for sensitive values.",
+        remediation: (f.pattern as { remediation?: string }).remediation || "Remove this from your system prompt.",
       }));
 
       if (probeResults.length === 0) {
@@ -115,40 +117,47 @@ export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressE
         totalAttacks: probeResults.length,
       };
       moduleResults.push(moduleResult);
-
-      yield {
-        type: "module-complete",
-        message: `${MODULE_LABELS[mod]}: ${moduleResult.grade}`,
-        moduleResult,
-        progress: Math.round((completedProbes / totalProbes) * 100),
-      };
+      yield { type: "module-complete", message: `${MODULE_LABELS[mod]}: ${moduleResult.grade}`, moduleResult, progress: Math.round((completedProbes / totalProbes) * 100) };
       continue;
     }
 
+    // Conversational probes: run in parallel batches
     const probes = MODULE_PROBES[mod] || [];
     const probeResults: ProbeResult[] = [];
 
-    for (const probe of probes) {
-      yield {
-        type: "probe-start",
-        message: `Testing: ${probe.name}...`,
-        progress: Math.round((completedProbes / totalProbes) * 100),
-      };
+    if (!config.systemPrompt) {
+      completedProbes += probes.length;
+      continue;
+    }
 
-      if (config.systemPrompt) {
-        const agentResponse = await simulateAgent(config.systemPrompt, probe.attackPrompt);
-        const result = await evaluateProbe(probe, config.systemPrompt, agentResponse);
+    // Announce all probes starting
+    yield {
+      type: "probe-start",
+      message: `Testing ${MODULE_LABELS[mod]} (${probes.length} probes, ${CONCURRENCY} parallel)...`,
+      progress: Math.round((completedProbes / totalProbes) * 100),
+    };
+
+    // Process probes in batches of CONCURRENCY
+    for (let i = 0; i < probes.length; i += CONCURRENCY) {
+      const batch = probes.slice(i, i + CONCURRENCY);
+
+      // Run batch in parallel
+      const batchResults = await Promise.all(
+        batch.map((probe) => runProbe(probe, config.systemPrompt!))
+      );
+
+      // Emit results for each probe in the batch
+      for (const result of batchResults) {
         probeResults.push(result);
+        completedProbes++;
 
         yield {
           type: "probe-complete",
-          message: `${probe.name}: ${result.succeeded ? "VULNERABLE" : "PASSED"}`,
+          message: `${result.probe.name}: ${result.succeeded ? "VULNERABLE" : "PASSED"}`,
           probeResult: result,
-          progress: Math.round(((completedProbes + 1) / totalProbes) * 100),
+          progress: Math.round((completedProbes / totalProbes) * 100),
         };
       }
-
-      completedProbes++;
     }
 
     const moduleResult: ModuleResult = {
@@ -160,18 +169,8 @@ export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressE
       totalAttacks: probeResults.length,
     };
     moduleResults.push(moduleResult);
-
-    yield {
-      type: "module-complete",
-      message: `${MODULE_LABELS[mod]}: ${moduleResult.grade}`,
-      moduleResult,
-      progress: Math.round((completedProbes / totalProbes) * 100),
-    };
+    yield { type: "module-complete", message: `${MODULE_LABELS[mod]}: ${moduleResult.grade}`, moduleResult, progress: Math.round((completedProbes / totalProbes) * 100) };
   }
 
-  yield {
-    type: "scan-complete",
-    message: "Scan complete.",
-    progress: 100,
-  };
+  yield { type: "scan-complete", message: "Scan complete.", progress: 100 };
 }
