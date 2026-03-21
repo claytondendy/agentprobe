@@ -150,25 +150,45 @@ export default function HowToPage() {
               <div className="space-y-3">
 
                 <div className="bg-white hairline-border rounded-sm p-4">
-                  <div className="text-sm font-bold text-charcoal mb-1">Claude Desktop</div>
-                  <p className="text-xs text-on-surface-variant mb-1">Config file: <span className="font-mono bg-slate-100 px-1">~/Library/Application Support/Claude/claude_desktop_config.json</span> (macOS)</p>
-                  <p className="text-xs text-on-surface-variant mb-2">This file lists your MCP servers, but not the individual tools. To get the tool list, you have two options:</p>
-                  <p className="text-xs text-on-surface-variant mb-1"><span className="font-semibold">Option 1:</span> Open Claude Desktop, start a conversation, and ask: "What tools do you have access to? List each one with its name and what it does." Copy the response.</p>
-                  <p className="text-xs text-on-surface-variant mb-2"><span className="font-semibold">Option 2:</span> Look at the source code of each MCP server listed in your config. The tools are defined in the server's code (usually in a <span className="font-mono bg-slate-100 px-1">tools</span> array or <span className="font-mono bg-slate-100 px-1">list_tools()</span> function).</p>
-                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-slate-300 mb-2">
-                    <span className="text-slate-500"># View your MCP server config</span><br/>
+                  <div className="text-sm font-bold text-charcoal mb-2">Claude Desktop</div>
+
+                  <p className="text-xs font-semibold text-charcoal mb-1">Step 1: Find your MCP config file</p>
+                  <p className="text-xs text-on-surface-variant mb-2">
+                    macOS: <span className="font-mono bg-slate-100 px-1">~/Library/Application Support/Claude/claude_desktop_config.json</span><br/>
+                    Windows: <span className="font-mono bg-slate-100 px-1">%APPDATA%\Claude\claude_desktop_config.json</span>
+                  </p>
+                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-slate-300 mb-3">
+                    <span className="text-slate-500"># macOS: open your config</span><br/>
                     cat ~/Library/Application\ Support/Claude/claude_desktop_config.json
                   </div>
+
+                  <p className="text-xs font-semibold text-charcoal mb-1">Step 2: Understand what's in it</p>
+                  <p className="text-xs text-on-surface-variant mb-2">The config file lists your MCP servers (the services Claude can connect to), but it does NOT list the individual tools. It looks something like this:</p>
+                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-emerald-400 overflow-x-auto whitespace-pre mb-3">{"{\n  \"mcpServers\": {\n    \"filesystem\": {\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@modelcontextprotocol/server-filesystem\", \"/Users/you\"]\n    },\n    \"slack\": {\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@anthropic/mcp-server-slack\"]\n    }\n  }\n}"}</div>
+                  <p className="text-xs text-on-surface-variant mb-2">Each server name (like "filesystem" or "slack") represents a package that exposes tools to Claude. The tools themselves are defined inside those packages.</p>
+
+                  <p className="text-xs font-semibold text-charcoal mb-1">Step 3: Get the actual tool list (pick one method)</p>
+                  <p className="text-xs text-on-surface-variant mb-1"><span className="font-semibold text-charcoal">Easiest:</span> Open Claude Desktop, start a conversation, and type:</p>
+                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-emerald-400 mb-2">List every tool you have access to as a JSON array. For each tool, include "name" and "description". Output only the JSON, nothing else.</div>
+                  <p className="text-xs text-on-surface-variant mb-2">Copy the JSON response and paste it into AgentProbe.</p>
+
+                  <p className="text-xs text-on-surface-variant mb-1"><span className="font-semibold text-charcoal">Alternative:</span> Check the npm package for each server listed in your config. For example, <span className="font-mono bg-slate-100 px-1">@modelcontextprotocol/server-filesystem</span> exposes tools like <span className="font-mono bg-slate-100 px-1">read_file</span>, <span className="font-mono bg-slate-100 px-1">write_file</span>, <span className="font-mono bg-slate-100 px-1">list_directory</span>. You can find the tool list in the package's README or source code on GitHub.</p>
                 </div>
 
                 <div className="bg-white hairline-border rounded-sm p-4">
-                  <div className="text-sm font-bold text-charcoal mb-1">Claude Code</div>
+                  <div className="text-sm font-bold text-charcoal mb-2">Claude Code</div>
+
+                  <p className="text-xs font-semibold text-charcoal mb-1">Step 1: See what MCP servers you have connected</p>
                   <p className="text-xs text-on-surface-variant mb-1">Config file: <span className="font-mono bg-slate-100 px-1">~/.claude/settings.json</span> (look for the <span className="font-mono bg-slate-100 px-1">mcpServers</span> section)</p>
-                  <p className="text-xs text-on-surface-variant mb-2">To see what tools are available in your current session, run <span className="font-mono bg-slate-100 px-1">/mcp</span> in Claude Code. To get a JSON list you can paste into AgentProbe, ask Claude: "List all MCP tools available to you as a JSON array with name and description for each."</p>
-                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-slate-300 mb-2">
-                    <span className="text-slate-500"># View your MCP server config</span><br/>
+                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-slate-300 mb-3">
+                    <span className="text-slate-500"># View your MCP config</span><br/>
                     cat ~/.claude/settings.json | python3 -m json.tool
                   </div>
+
+                  <p className="text-xs font-semibold text-charcoal mb-1">Step 2: List the tools from each server</p>
+                  <p className="text-xs text-on-surface-variant mb-1">In a Claude Code session, type <span className="font-mono bg-slate-100 px-1">/mcp</span> to see all connected servers and their tools. Then ask Claude:</p>
+                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-emerald-400 mb-2">List every MCP tool you have access to as a JSON array. For each tool, include "name" and "description". Output only the JSON.</div>
+                  <p className="text-xs text-on-surface-variant">Copy the JSON and paste it into AgentProbe's MCP Scanner.</p>
                 </div>
 
                 <div className="bg-white hairline-border rounded-sm p-4">
