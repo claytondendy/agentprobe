@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ScanConfig } from "@/lib/types";
 import { createScan, getAllScans } from "@/lib/store";
+import { startScanInBackground } from "@/lib/runner";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -33,8 +34,8 @@ export async function POST(req: NextRequest) {
   };
 
   createScan(config);
+  startScanInBackground(config);
 
-  // Scan execution happens in the SSE stream route, not here.
   return NextResponse.json({ id, status: "running" });
 }
 

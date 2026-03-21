@@ -1,7 +1,8 @@
-import { ScanConfig, ScanResult, ModuleResult } from "./types";
+import { ScanConfig, ScanResult, ModuleResult, ScanProgressEvent } from "./types";
 import { computeOverallGrade, countFindings } from "./grader";
 
 const scans = new Map<string, ScanResult>();
+const eventLogs = new Map<string, ScanProgressEvent[]>();
 
 export function createScan(config: ScanConfig): ScanResult {
   const result: ScanResult = {
@@ -18,7 +19,23 @@ export function createScan(config: ScanConfig): ScanResult {
     startedAt: new Date().toISOString(),
   };
   scans.set(config.id, result);
+  eventLogs.set(config.id, []);
   return result;
+}
+
+export function pushEvent(id: string, event: ScanProgressEvent) {
+  const log = eventLogs.get(id);
+  if (log) log.push(event);
+}
+
+export function getEvents(id: string, fromIndex: number = 0): ScanProgressEvent[] {
+  const log = eventLogs.get(id);
+  if (!log) return [];
+  return log.slice(fromIndex);
+}
+
+export function getEventCount(id: string): number {
+  return eventLogs.get(id)?.length || 0;
 }
 
 export function updateScan(id: string, moduleResult: ModuleResult) {
@@ -39,6 +56,13 @@ export function completeScan(id: string) {
   const scan = scans.get(id);
   if (!scan) return;
   scan.status = "complete";
+  scan.completedAt = new Date().toISOString();
+}
+
+export function failScan(id: string) {
+  const scan = scans.get(id);
+  if (!scan) return;
+  scan.status = "failed";
   scan.completedAt = new Date().toISOString();
 }
 
