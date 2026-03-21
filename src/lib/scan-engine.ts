@@ -1,4 +1,3 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { ScanConfig, ModuleResult, ProbeResult, ScanModule, Probe, ScanProgressEvent } from "./types";
 import { promptInjectionProbes } from "./probes/prompt-injection";
 import { dataExfiltrationProbes } from "./probes/data-exfiltration";
@@ -7,11 +6,10 @@ import { excessiveAgencyProbes } from "./probes/excessive-agency";
 import { analyzeSensitiveData } from "./probes/sensitive-data";
 import { misinformationProbes } from "./probes/misinformation";
 import { analyzeMcpConfig } from "./mcp-analyzer";
-import { evaluateProbe } from "./evaluator";
+import { simulateAndEvaluate } from "./evaluator";
 import { gradeModule } from "./grader";
 
-const client = new Anthropic();
-const CONCURRENCY = 4; // Run 4 probes at once
+const CONCURRENCY = 5; // Run 5 probes at once
 
 const MODULE_PROBES: Record<ScanModule, Probe[]> = {
   "prompt-injection": [...promptInjectionProbes, ...misinformationProbes],
@@ -29,22 +27,9 @@ const MODULE_LABELS: Record<ScanModule, string> = {
   "sensitive-data": "Sensitive Data Exposure",
 };
 
-// Use Haiku for the simulated target agent (fast, cheap)
-// The agent just needs to respond in character; it doesn't need to be smart
-async function simulateAgent(systemPrompt: string, attackPrompt: string): Promise<string> {
-  const response = await client.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 512,
-    system: systemPrompt,
-    messages: [{ role: "user", content: attackPrompt }],
-  });
-  return response.content[0].type === "text" ? response.content[0].text : "";
-}
-
-// Run a single probe: simulate + evaluate
+// Single API call per probe: simulate the agent and evaluate the result
 async function runProbe(probe: Probe, systemPrompt: string): Promise<ProbeResult> {
-  const agentResponse = await simulateAgent(systemPrompt, probe.attackPrompt);
-  return evaluateProbe(probe, systemPrompt, agentResponse);
+  return simulateAndEvaluate(probe, systemPrompt);
 }
 
 export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressEvent> {
