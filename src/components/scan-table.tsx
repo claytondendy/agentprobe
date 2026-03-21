@@ -32,7 +32,7 @@ export function ScanTable({ scans }: { scans: ScanResult[] }) {
             <th className={th} style={{ width: "11.5%" }}>Passed</th>
             <th className={th} style={{ width: "11.5%" }}>Total Tests</th>
             <th className={th} style={{ width: "11.5%" }}>Grade</th>
-            <th className={`${th} !border-r-0`} style={{ width: "11%" }}></th>
+            <th className={`${th} !border-r-0`} style={{ width: "11%" }}>Results</th>
           </tr>
         </thead>
         <tbody className="divide-y-[0.5px] divide-hairline">
