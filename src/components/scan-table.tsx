@@ -25,14 +25,14 @@ export function ScanTable({ scans }: { scans: ScanResult[] }) {
       <table className="w-full text-left border-collapse table-fixed">
         <thead>
           <tr className="border-b-[0.5px] border-hairline bg-surface">
-            <th className={`${th} !text-left w-[22%]`}>Agent</th>
-            <th className={`${th} w-[12%]`}>Mode</th>
-            <th className={`${th} w-[12%]`}>Status</th>
-            <th className={`${th} w-[12%]`}>Vulnerabilities</th>
-            <th className={`${th} w-[10%]`}>Passed</th>
-            <th className={`${th} w-[10%]`}>Total Tests</th>
-            <th className={`${th} w-[8%]`}>Grade</th>
-            <th className={`${th} w-[14%] !border-r-0`}></th>
+            <th className={`${th} !text-left`} style={{ width: "20%" }}>Agent</th>
+            <th className={th} style={{ width: "11.5%" }}>Mode</th>
+            <th className={th} style={{ width: "11.5%" }}>Status</th>
+            <th className={th} style={{ width: "11.5%" }}>Vulnerabilities</th>
+            <th className={th} style={{ width: "11.5%" }}>Passed</th>
+            <th className={th} style={{ width: "11.5%" }}>Total Tests</th>
+            <th className={th} style={{ width: "11.5%" }}>Grade</th>
+            <th className={`${th} !border-r-0`} style={{ width: "11%" }}></th>
           </tr>
         </thead>
         <tbody className="divide-y-[0.5px] divide-hairline">
