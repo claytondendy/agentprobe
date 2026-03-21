@@ -7,9 +7,9 @@ import { ScanTable } from "@/components/scan-table";
 import { ScanResult } from "@/lib/types";
 
 const modeCards = [
-  { num: "01", icon: "terminal", title: "Agent Scanner", sub: "Agents", desc: "CLAUDE.md files, system prompts, custom instructions, and agent configurations. Test for injection, jailbreak, data leakage, and hardcoded secrets.", cta: "Scan an Agent", href: "/scan/new?mode=prompt" },
-  { num: "02", icon: "auto_fix_high", title: "Skill Scanner", sub: "Skills", desc: "Skill files, plugin definitions, GPT Actions, and tool configurations from any AI platform. Test for hijacking, instruction leakage, and sensitive data.", cta: "Scan a Skill", href: "/scan/new?mode=skill" },
-  { num: "03", icon: "hub", title: "MCP Scanner", sub: "Tools", desc: "MCP server tool definitions, function calling schemas, and agent tool registries. Analyze for dangerous capabilities, risky combinations, and excessive permissions.", cta: "Scan Tools", href: "/scan/new?mode=mcp" },
+  { num: "01", icon: "terminal", title: "Agent Scanner", sub: "Agents", desc: "CLAUDE.md files, system prompts, custom instructions, and agent configurations. Test for prompt injection, jailbreak resistance, data leakage, and hardcoded secrets.", cta: "Scan an Agent", href: "/scan/new?mode=prompt" },
+  { num: "02", icon: "auto_fix_high", title: "Skill Scanner", sub: "Skills", desc: "Skill files, plugin definitions, slash commands, GPT Actions, and tool configurations from any AI platform. Test for goal hijacking, instruction leakage, sensitive data exposure, and unauthorized behavior.", cta: "Scan a Skill", href: "/scan/new?mode=skill" },
+  { num: "03", icon: "hub", title: "MCP Scanner", sub: "Tools", desc: "MCP server tool definitions, function calling schemas, and agent tool registries. Analyze for dangerous capabilities, risky tool combinations, excessive permissions, and data exfiltration vectors.", cta: "Scan Tools", href: "/scan/new?mode=mcp" },
 ];
 
 export default function Dashboard() {
@@ -50,13 +50,13 @@ export default function Dashboard() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {modeCards.map((card) => (
-              <Link key={card.num} href={card.href} className="group relative p-8 bg-transparent hairline-border rounded-sm hover:bg-charcoal transition-all duration-300 cursor-pointer overflow-hidden">
+              <Link key={card.num} href={card.href} className="group relative p-8 bg-transparent hairline-border rounded-sm hover:bg-charcoal transition-all duration-300 cursor-pointer overflow-hidden flex flex-col">
                 <div className="flex justify-between items-start mb-12">
                   <span className="material-symbols-outlined text-charcoal group-hover:text-white transition-colors" style={{ fontSize: 32 }}>{card.icon}</span>
                   <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant group-hover:text-slate-400">{card.num}</span>
                 </div>
                 <h3 className="font-headline text-xl font-bold text-charcoal group-hover:text-white mb-2 transition-colors">{card.title}</h3>
-                <p className="text-sm text-on-surface-variant group-hover:text-slate-300 transition-colors leading-relaxed">{card.desc}</p>
+                <p className="text-sm text-on-surface-variant group-hover:text-slate-300 transition-colors leading-relaxed flex-1">{card.desc}</p>
                 <div className="mt-8 flex items-center space-x-2 text-charcoal group-hover:text-white transition-colors">
                   <span className="text-xs font-bold uppercase tracking-tighter">{card.cta}</span>
                   <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
