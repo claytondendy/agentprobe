@@ -32,29 +32,32 @@ export default function HowToPage() {
               <div className="space-y-3">
                 <div className="bg-white hairline-border rounded-sm p-4">
                   <div className="text-sm font-bold text-charcoal mb-1">Claude Code</div>
-                  <p className="text-xs text-on-surface-variant mb-2">Open the <span className="font-mono bg-slate-100 px-1">CLAUDE.md</span> file in your project root. This is your system prompt. Copy the entire file contents.</p>
+                  <p className="text-xs text-on-surface-variant mb-1">File: <span className="font-mono bg-slate-100 px-1">CLAUDE.md</span> in your project root (or <span className="font-mono bg-slate-100 px-1">~/.claude/CLAUDE.md</span> for global instructions)</p>
+                  <p className="text-xs text-on-surface-variant mb-2">This file is loaded every time Claude Code starts a session. Open it and copy the entire contents.</p>
                   <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-slate-300">cat CLAUDE.md | pbcopy</div>
                 </div>
 
                 <div className="bg-white hairline-border rounded-sm p-4">
                   <div className="text-sm font-bold text-charcoal mb-1">ChatGPT Custom GPTs</div>
-                  <p className="text-xs text-on-surface-variant mb-2">Go to <span className="font-semibold">Explore GPTs</span>, click your GPT, click <span className="font-semibold">Edit</span>, then copy the text in the <span className="font-semibold">Instructions</span> field. That's your system prompt.</p>
+                  <p className="text-xs text-on-surface-variant mb-1">Location: <span className="font-semibold">chatgpt.com</span> &gt; <span className="font-semibold">Explore GPTs</span> &gt; select your GPT &gt; <span className="font-semibold">Edit</span> &gt; <span className="font-semibold">Configure</span> tab</p>
+                  <p className="text-xs text-on-surface-variant">Copy everything in the <span className="font-semibold">Instructions</span> text box. That entire block of text is your system prompt.</p>
                 </div>
 
                 <div className="bg-white hairline-border rounded-sm p-4">
                   <div className="text-sm font-bold text-charcoal mb-1">OpenAI / Anthropic API</div>
-                  <p className="text-xs text-on-surface-variant mb-2">In your code, find where you call the API. The system prompt is the <span className="font-mono bg-slate-100 px-1">system</span> field in your messages array or the <span className="font-mono bg-slate-100 px-1">system</span> parameter.</p>
-                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-slate-300 overflow-x-auto">
-                    <span className="text-slate-500">// OpenAI</span><br/>
+                  <p className="text-xs text-on-surface-variant mb-2">Search your codebase for where you make API calls. The system prompt is the string passed as the <span className="font-mono bg-slate-100 px-1">system</span> role or parameter.</p>
+                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-slate-300 overflow-x-auto mb-2">
+                    <span className="text-slate-500">// OpenAI - look for this pattern in your code</span><br/>
                     messages: [{"{"} role: <span className="text-emerald-400">"system"</span>, content: <span className="text-emerald-400">"You are..."</span> {"}"}]<br/><br/>
-                    <span className="text-slate-500">// Anthropic</span><br/>
+                    <span className="text-slate-500">// Anthropic - look for this pattern</span><br/>
                     system: <span className="text-emerald-400">"You are..."</span>
                   </div>
+                  <p className="text-xs text-on-surface-variant">Copy the full string value. It might be inline, in a variable, or loaded from a file.</p>
                 </div>
 
                 <div className="bg-white hairline-border rounded-sm p-4">
                   <div className="text-sm font-bold text-charcoal mb-1">Bot frameworks (Botpress, Voiceflow, Dialogflow, etc.)</div>
-                  <p className="text-xs text-on-surface-variant">Look for "system message," "agent instructions," "persona," or "prompt" in your bot's settings or configuration panel. Copy the full text.</p>
+                  <p className="text-xs text-on-surface-variant">Open your bot's settings panel. Look for fields labeled "system message," "agent instructions," "persona," "prompt," or "AI configuration." Copy the full text from that field.</p>
                 </div>
               </div>
             </div>
@@ -84,18 +87,25 @@ export default function HowToPage() {
               <div className="space-y-3">
                 <div className="bg-white hairline-border rounded-sm p-4">
                   <div className="text-sm font-bold text-charcoal mb-1">Claude Code skills</div>
-                  <p className="text-xs text-on-surface-variant mb-2">Skills are markdown files, usually in <span className="font-mono bg-slate-100 px-1">~/.claude/skills/</span> or a project's <span className="font-mono bg-slate-100 px-1">.claude/skills/</span> directory. Open the <span className="font-mono bg-slate-100 px-1">.md</span> file and copy the full contents.</p>
-                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-slate-300">cat ~/.claude/skills/my-skill/skill.md | pbcopy</div>
+                  <p className="text-xs text-on-surface-variant mb-1">Files: <span className="font-mono bg-slate-100 px-1">~/.claude/skills/&lt;skill-name&gt;/*.md</span> (global) or <span className="font-mono bg-slate-100 px-1">.claude/skills/</span> (per-project)</p>
+                  <p className="text-xs text-on-surface-variant mb-2">Each skill is a markdown file. Open the <span className="font-mono bg-slate-100 px-1">.md</span> file and copy the entire contents, including the frontmatter (the <span className="font-mono bg-slate-100 px-1">---</span> block at the top with name and description).</p>
+                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-slate-300 mb-2">
+                    <span className="text-slate-500"># List all your skills</span><br/>
+                    ls ~/.claude/skills/<br/><br/>
+                    <span className="text-slate-500"># Copy a specific skill</span><br/>
+                    cat ~/.claude/skills/my-skill/my-skill.md | pbcopy
+                  </div>
                 </div>
 
                 <div className="bg-white hairline-border rounded-sm p-4">
                   <div className="text-sm font-bold text-charcoal mb-1">OpenAI GPT Actions</div>
-                  <p className="text-xs text-on-surface-variant">In your Custom GPT editor, go to <span className="font-semibold">Configure</span>, then scroll to <span className="font-semibold">Actions</span>. Copy the action schema (the JSON or YAML that defines what the action does).</p>
+                  <p className="text-xs text-on-surface-variant mb-1">Location: <span className="font-semibold">chatgpt.com</span> &gt; your GPT &gt; <span className="font-semibold">Edit</span> &gt; <span className="font-semibold">Configure</span> &gt; scroll to <span className="font-semibold">Actions</span></p>
+                  <p className="text-xs text-on-surface-variant">Copy the action schema (the JSON or YAML that defines what the action does, its endpoints, and parameters).</p>
                 </div>
 
                 <div className="bg-white hairline-border rounded-sm p-4">
                   <div className="text-sm font-bold text-charcoal mb-1">GitHub Copilot Extensions / LangChain tools</div>
-                  <p className="text-xs text-on-surface-variant">Find the tool or extension definition in your code. It's usually a function with a description, parameters, and execution logic. Copy the full definition including the description string.</p>
+                  <p className="text-xs text-on-surface-variant">Find the tool or extension definition in your code. It's usually a function decorated with <span className="font-mono bg-slate-100 px-1">@tool</span> or an object with a description, parameters, and execution logic. Copy the full definition including the description string.</p>
                 </div>
 
                 <div className="bg-white hairline-border rounded-sm p-4">
@@ -119,32 +129,89 @@ export default function HowToPage() {
             </div>
 
             <div className="mb-6">
-              <h3 className="text-sm font-bold text-charcoal mb-2">What is an MCP tool configuration?</h3>
+              <h3 className="text-sm font-bold text-charcoal mb-2">What is MCP?</h3>
+              <p className="text-sm text-on-surface-variant leading-relaxed mb-3">
+                MCP (Model Context Protocol) is how AI agents connect to external tools. When you give Claude access to your email, file system, database, or any other service, that connection is defined through MCP. Each MCP server exposes a list of tools the agent can call, like <span className="font-mono bg-slate-100 px-1">send_email</span>, <span className="font-mono bg-slate-100 px-1">read_file</span>, or <span className="font-mono bg-slate-100 px-1">run_query</span>.
+              </p>
               <p className="text-sm text-on-surface-variant leading-relaxed">
-                MCP (Model Context Protocol) is the standard for connecting AI agents to external tools, databases, and APIs. An MCP tool configuration is the JSON that describes what tools your agent has access to: their names, descriptions, and parameters. The security risk isn't the tools themselves; it's that a prompt injection attack can trick the agent into calling these tools in unintended ways. An agent with access to <span className="font-mono bg-slate-100 px-1">send_email</span> and <span className="font-mono bg-slate-100 px-1">read_file</span> can be exploited to exfiltrate data.
+                The risk: if an attacker can inject a prompt into your agent (through a malicious email, document, or user message), they can trick the agent into calling these tools in unintended ways. An agent with access to both <span className="font-mono bg-slate-100 px-1">read_file</span> and <span className="font-mono bg-slate-100 px-1">send_email</span> could be exploited to read sensitive files and email them to an attacker. The MCP Scanner analyzes your tool configuration to flag these risks before they become real attacks.
               </p>
             </div>
 
             <div className="mb-6">
-              <h3 className="text-sm font-bold text-charcoal mb-2">Where to find yours</h3>
+              <h3 className="text-sm font-bold text-charcoal mb-2">What AgentProbe needs</h3>
+              <p className="text-sm text-on-surface-variant leading-relaxed mb-3">
+                A JSON array listing the tools your agent has access to. Each tool needs a <span className="font-mono bg-slate-100 px-1">name</span> and a <span className="font-mono bg-slate-100 px-1">description</span>. AgentProbe scans for dangerous capabilities (file deletion, code execution, external communication), risky tool combinations (read + send = data exfiltration), and excessive tool counts.
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <h3 className="text-sm font-bold text-charcoal mb-2">Where to find your tool list</h3>
               <div className="space-y-3">
-                <div className="bg-white hairline-border rounded-sm p-4">
-                  <div className="text-sm font-bold text-charcoal mb-1">Claude Desktop / Claude Code</div>
-                  <p className="text-xs text-on-surface-variant mb-2">Your MCP servers are defined in <span className="font-mono bg-slate-100 px-1">claude_desktop_config.json</span>. The tool definitions come from each server. To extract them, check the server's source code for the tool list, or look at what tools appear when the agent connects.</p>
-                </div>
 
                 <div className="bg-white hairline-border rounded-sm p-4">
-                  <div className="text-sm font-bold text-charcoal mb-1">OpenAI function calling</div>
-                  <p className="text-xs text-on-surface-variant mb-2">In your API call, find the <span className="font-mono bg-slate-100 px-1">tools</span> or <span className="font-mono bg-slate-100 px-1">functions</span> array. Copy the full JSON array.</p>
-                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-slate-300 overflow-x-auto">
-                    tools: [{"{"} type: <span className="text-emerald-400">"function"</span>, function: {"{"} name: <span className="text-emerald-400">"send_email"</span>, ... {"}"} {"}"}]
+                  <div className="text-sm font-bold text-charcoal mb-1">Claude Desktop</div>
+                  <p className="text-xs text-on-surface-variant mb-1">Config file: <span className="font-mono bg-slate-100 px-1">~/Library/Application Support/Claude/claude_desktop_config.json</span> (macOS)</p>
+                  <p className="text-xs text-on-surface-variant mb-2">This file lists your MCP servers, but not the individual tools. To get the tool list, you have two options:</p>
+                  <p className="text-xs text-on-surface-variant mb-1"><span className="font-semibold">Option 1:</span> Open Claude Desktop, start a conversation, and ask: "What tools do you have access to? List each one with its name and what it does." Copy the response.</p>
+                  <p className="text-xs text-on-surface-variant mb-2"><span className="font-semibold">Option 2:</span> Look at the source code of each MCP server listed in your config. The tools are defined in the server's code (usually in a <span className="font-mono bg-slate-100 px-1">tools</span> array or <span className="font-mono bg-slate-100 px-1">list_tools()</span> function).</p>
+                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-slate-300 mb-2">
+                    <span className="text-slate-500"># View your MCP server config</span><br/>
+                    cat ~/Library/Application\ Support/Claude/claude_desktop_config.json
                   </div>
                 </div>
 
                 <div className="bg-white hairline-border rounded-sm p-4">
-                  <div className="text-sm font-bold text-charcoal mb-1">Any agent framework</div>
-                  <p className="text-xs text-on-surface-variant mb-2">Export your tool registry as JSON. AgentProbe needs a JSON array where each object has <span className="font-mono bg-slate-100 px-1">name</span>, <span className="font-mono bg-slate-100 px-1">description</span>, and optionally <span className="font-mono bg-slate-100 px-1">parameters</span>.</p>
-                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-emerald-400 overflow-x-auto whitespace-pre">{"[\n  { \"name\": \"send_email\", \"description\": \"Send email to any address\" },\n  { \"name\": \"read_file\", \"description\": \"Read any file from disk\" }\n]"}</div>
+                  <div className="text-sm font-bold text-charcoal mb-1">Claude Code</div>
+                  <p className="text-xs text-on-surface-variant mb-1">Config file: <span className="font-mono bg-slate-100 px-1">~/.claude/settings.json</span> (look for the <span className="font-mono bg-slate-100 px-1">mcpServers</span> section)</p>
+                  <p className="text-xs text-on-surface-variant mb-2">To see what tools are available in your current session, run <span className="font-mono bg-slate-100 px-1">/mcp</span> in Claude Code. To get a JSON list you can paste into AgentProbe, ask Claude: "List all MCP tools available to you as a JSON array with name and description for each."</p>
+                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-slate-300 mb-2">
+                    <span className="text-slate-500"># View your MCP server config</span><br/>
+                    cat ~/.claude/settings.json | python3 -m json.tool
+                  </div>
+                </div>
+
+                <div className="bg-white hairline-border rounded-sm p-4">
+                  <div className="text-sm font-bold text-charcoal mb-1">OpenAI function calling</div>
+                  <p className="text-xs text-on-surface-variant mb-2">Search your code for the <span className="font-mono bg-slate-100 px-1">tools</span> or <span className="font-mono bg-slate-100 px-1">functions</span> parameter in your API call. Copy the full array.</p>
+                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-slate-300 overflow-x-auto">
+                    <span className="text-slate-500">// Find this in your code and copy the tools array</span><br/>
+                    const response = await openai.chat.completions.create({"{"}<br/>
+                    &nbsp;&nbsp;model: <span className="text-emerald-400">"gpt-4"</span>,<br/>
+                    &nbsp;&nbsp;tools: [<span className="text-emerald-400"> &lt;-- copy this entire array</span><br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;{"{"} type: <span className="text-emerald-400">"function"</span>, function: {"{"} name: <span className="text-emerald-400">"send_email"</span>, ... {"}"} {"}"},<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;{"{"} type: <span className="text-emerald-400">"function"</span>, function: {"{"} name: <span className="text-emerald-400">"read_file"</span>, ... {"}"} {"}"},<br/>
+                    &nbsp;&nbsp;]<br/>
+                    {"}"});
+                  </div>
+                </div>
+
+                <div className="bg-white hairline-border rounded-sm p-4">
+                  <div className="text-sm font-bold text-charcoal mb-1">Any MCP server or agent framework</div>
+                  <p className="text-xs text-on-surface-variant mb-2">If you built your own MCP server or use a framework like LangChain, CrewAI, or AutoGen, export your tool registry as JSON. AgentProbe needs this format:</p>
+                  <div className="bg-charcoal rounded-sm px-3 py-2 font-mono text-xs text-emerald-400 overflow-x-auto whitespace-pre">{"[\n  {\n    \"name\": \"send_email\",\n    \"description\": \"Send an email to any address with subject and body\"\n  },\n  {\n    \"name\": \"read_file\",\n    \"description\": \"Read any file from the local filesystem\"\n  },\n  {\n    \"name\": \"execute_sql\",\n    \"description\": \"Run SQL queries against the production database\"\n  },\n  {\n    \"name\": \"web_fetch\",\n    \"description\": \"Make HTTP requests to any URL\"\n  }\n]"}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <h3 className="text-sm font-bold text-charcoal mb-2">What the MCP Scanner looks for</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="bg-white hairline-border rounded-sm p-3">
+                  <div className="text-xs font-bold text-red-600 mb-1">Dangerous tools</div>
+                  <p className="text-xs text-on-surface-variant">Tools that can send emails, delete files, execute code, or make external HTTP requests</p>
+                </div>
+                <div className="bg-white hairline-border rounded-sm p-3">
+                  <div className="text-xs font-bold text-red-600 mb-1">Risky combinations</div>
+                  <p className="text-xs text-on-surface-variant">read_file + send_email = data exfiltration. execute_code + web_fetch = remote code execution with exfil</p>
+                </div>
+                <div className="bg-white hairline-border rounded-sm p-3">
+                  <div className="text-xs font-bold text-amber-600 mb-1">Excessive permissions</div>
+                  <p className="text-xs text-on-surface-variant">Too many tools increases the attack surface. A customer service bot doesn't need database access</p>
+                </div>
+                <div className="bg-white hairline-border rounded-sm p-3">
+                  <div className="text-xs font-bold text-amber-600 mb-1">Privilege escalation paths</div>
+                  <p className="text-xs text-on-surface-variant">Tools that reference admin, root, or elevated permissions that an attacker could exploit</p>
                 </div>
               </div>
             </div>
