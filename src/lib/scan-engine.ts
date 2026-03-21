@@ -77,7 +77,7 @@ export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressE
         response: `Found: ${f.match}`,
         succeeded: true,
         severity: f.pattern.severity,
-        explanation: `${f.pattern.name} detected in system prompt`,
+        explanation: `[${(f.pattern as { category?: string }).category || "Detection"}] ${f.pattern.name}`,
         remediation: (f.pattern as { remediation?: string }).remediation || "Remove this from your system prompt.",
       }));
 
