@@ -5,6 +5,7 @@ import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { ScanTable } from "@/components/scan-table";
 import { ScanResult } from "@/lib/types";
+import { Typewriter } from "@/components/typewriter";
 
 const modeCards = [
   { num: "01", icon: "terminal", title: "Agent Scanner", sub: "Agents", desc: "CLAUDE.md files, system prompts, custom instructions, and agent configurations. Test for prompt injection, jailbreak resistance, data leakage, and hardcoded secrets.", cta: "Scan an Agent", href: "/scan/new?mode=prompt" },
@@ -45,7 +46,7 @@ export default function Dashboard() {
         <section className="px-8 max-w-7xl mx-auto mb-32">
           <div className="mb-8">
             <h2 className="font-headline text-2xl font-bold text-charcoal tracking-tighter">
-              Scan your <span className="text-on-surface-variant">{modeCards.map((c) => c.sub).join(", ")}</span>
+              Scan your <Typewriter />
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
