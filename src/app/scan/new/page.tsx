@@ -3,15 +3,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
-import { ScanMode, ScanModule } from "@/lib/types";
-
-const allModules: { id: ScanModule; label: string }[] = [
-  { id: "prompt-injection", label: "Prompt Injection" },
-  { id: "data-exfiltration", label: "Data Exfiltration" },
-  { id: "jailbreak", label: "Jailbreak Resistance" },
-  { id: "excessive-agency", label: "Excessive Agency" },
-  { id: "sensitive-data", label: "Sensitive Data Exposure" },
-];
+import { ScanMode } from "@/lib/types";
 
 export default function NewScanPage() {
   const router = useRouter();
@@ -23,14 +15,8 @@ export default function NewScanPage() {
   const [systemPrompt, setSystemPrompt] = useState("");
   const [mcpConfig, setMcpConfig] = useState("");
   const [apiEndpoint, setApiEndpoint] = useState("");
-  const [intensity, setIntensity] = useState<"low" | "medium" | "high">("medium");
-  const [modules, setModules] = useState<ScanModule[]>(allModules.map((m) => m.id));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-
-  const toggleModule = (id: ScanModule) => {
-    setModules((prev) => prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +25,7 @@ export default function NewScanPage() {
     const res = await fetch("/api/scan", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, mode, systemPrompt: mode === "mcp" ? mcpConfig : systemPrompt, apiEndpoint, modules, intensity }),
+      body: JSON.stringify({ name, mode, systemPrompt: mode === "mcp" ? mcpConfig : systemPrompt }),
 
     });
     const data = await res.json();
@@ -155,34 +141,6 @@ export default function NewScanPage() {
                       className="w-full rounded-sm border-hairline shadow-sm focus:border-charcoal focus:ring-charcoal text-sm py-2 px-3 font-mono" />
                   </div>
                 )}
-
-                <div>
-                  <label className="block text-sm font-medium text-charcoal mb-3">Scan Intensity</label>
-                  <div className="flex gap-6">
-                    {(["low", "medium", "high"] as const).map((i) => (
-                      <label key={i} className="flex items-center">
-                        <input type="radio" name="intensity" checked={intensity === i} onChange={() => setIntensity(i)}
-                          className="h-4 w-4 border-hairline text-charcoal focus:ring-charcoal" />
-                        <span className="ml-2 text-sm font-medium text-charcoal capitalize">{i}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-charcoal mb-4">Security Modules</label>
-                  <div className="space-y-4">
-                    {allModules.map((mod) => (
-                      <label key={mod.id} className="flex items-center cursor-pointer">
-                        <button type="button" onClick={() => toggleModule(mod.id)}
-                          className={`relative inline-flex h-6 w-11 rounded-full transition-colors ${modules.includes(mod.id) ? "bg-charcoal" : "bg-slate-200"}`}>
-                          <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${modules.includes(mod.id) ? "translate-x-5" : "translate-x-0.5"} mt-0.5`} />
-                        </button>
-                        <span className="ml-3 text-sm font-medium text-charcoal">{mod.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
 
                 <div className="pt-4 flex gap-4">
                   <button type="submit" disabled={submitting}
