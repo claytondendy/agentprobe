@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
-import { Sidebar } from "@/components/sidebar";
 import { ScanMode, ScanModule } from "@/lib/types";
 
 const allModules: { id: ScanModule; label: string }[] = [
@@ -55,11 +54,10 @@ export default function NewScanPage() {
   return (
     <>
       <Nav />
-      <div className="flex pt-16">
-        <Sidebar />
-        <main className="flex-1 bg-surface min-h-screen p-8 md:p-12">
+      <main className="pt-16 min-h-screen">
+        <section className="px-8 pt-24 pb-32 max-w-4xl mx-auto">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold text-charcoal mb-8 tracking-tight font-headline">New Scan Configuration</h1>
+            <h1 className="font-headline text-4xl font-extrabold tracking-tighter text-charcoal mb-8">New Scan Configuration</h1>
             <div className="bg-white hairline-border rounded-sm p-8">
               <form onSubmit={handleSubmit} className="space-y-8" noValidate>
                 <div>
@@ -199,8 +197,8 @@ export default function NewScanPage() {
               </form>
             </div>
           </div>
-        </main>
-      </div>
+        </section>
+      </main>
       <Footer />
     </>
   );

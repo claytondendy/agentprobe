@@ -6,8 +6,8 @@ export default function PrivacyPage() {
     <>
       <Nav />
       <main className="pt-16 min-h-screen">
-        <section className="px-8 pt-24 pb-32 max-w-3xl mx-auto">
-          <h1 className="font-headline text-4xl font-extrabold tracking-tighter text-charcoal mb-2">Privacy Policy</h1>
+        <section className="px-8 pt-24 pb-32 max-w-4xl mx-auto">
+          <h1 className="font-headline text-4xl font-extrabold tracking-tighter text-charcoal mb-4">Privacy Policy</h1>
           <p className="text-sm text-on-surface-variant mb-12">Last updated: March 2026</p>
 
           <div className="space-y-8 text-on-surface-variant leading-relaxed">

@@ -9,8 +9,6 @@ export function Footer() {
           <div className="flex space-x-8">
             <Link href="/privacy" className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-charcoal transition-colors">Privacy</Link>
             <Link href="/security" className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-charcoal transition-colors">Security Policy</Link>
-            <Link href="/benchmarks" className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-charcoal transition-colors">Benchmarks</Link>
-            <Link href="/about" className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-charcoal transition-colors">About</Link>
           </div>
         </div>
         <div className="text-[10px] text-on-surface-variant">

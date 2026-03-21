@@ -6,7 +6,7 @@ export default function AboutPage() {
     <>
       <Nav />
       <main className="pt-16 min-h-screen">
-        <section className="px-8 pt-24 pb-32 max-w-3xl mx-auto">
+        <section className="px-8 pt-24 pb-32 max-w-4xl mx-auto">
           <h1 className="font-headline text-4xl font-extrabold tracking-tighter text-charcoal mb-8">About AgentProbe</h1>
 
           <div className="space-y-8 text-on-surface-variant leading-relaxed">

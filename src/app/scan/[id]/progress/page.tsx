@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
-import { Sidebar } from "@/components/sidebar";
 import { ProgressRing } from "@/components/progress-ring";
 import { TerminalFeed } from "@/components/terminal-feed";
 
@@ -46,14 +45,13 @@ export default function ScanProgressPage() {
   return (
     <>
       <Nav />
-      <div className="flex pt-16">
-        <Sidebar />
-        <main className="flex-1 bg-white min-h-screen p-8">
-          <div className="max-w-6xl mx-auto">
+      <main className="pt-16 min-h-screen">
+        <section className="px-8 pt-24 pb-32 max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             <div className="flex items-center gap-4 mb-8">
               <div className="h-12 w-12 rounded-full border-2 border-hairline border-t-charcoal animate-[spin_3s_linear_infinite]" />
               <div>
-                <h1 className="text-3xl font-bold tracking-tight text-charcoal font-headline">Scanning in Progress</h1>
+                <h1 className="font-headline text-4xl font-extrabold tracking-tighter text-charcoal mb-4">Scanning in Progress</h1>
                 <p className="text-xs font-medium text-on-surface-variant uppercase tracking-wider mt-1">
                   {progress}% complete
                 </p>
@@ -72,8 +70,8 @@ export default function ScanProgressPage() {
               <TerminalFeed messages={messages} />
             </div>
           </div>
-        </main>
-      </div>
+        </section>
+      </main>
       <Footer />
     </>
   );

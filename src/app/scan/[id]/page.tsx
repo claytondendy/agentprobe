@@ -4,7 +4,6 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
-import { Sidebar } from "@/components/sidebar";
 import { GradeBadge } from "@/components/grade-badge";
 import { FindingCard } from "@/components/finding-card";
 import { ScanResult } from "@/lib/types";
@@ -114,10 +113,9 @@ export default function ScanResultsPage() {
   return (
     <>
       <Nav />
-      <div className="flex pt-16">
-        <Sidebar />
-        <main className="flex-1 bg-surface min-h-screen px-8 py-16 md:px-16 lg:px-24">
-          <header className="mb-16 max-w-5xl">
+      <main className="pt-16 min-h-screen">
+        <section className="px-8 pt-24 pb-32 max-w-4xl mx-auto">
+          <header className="mb-16">
             <div className="flex items-center gap-8">
               <GradeBadge grade={scan.overallGrade} size="lg" />
               <div>
@@ -137,21 +135,21 @@ export default function ScanResultsPage() {
             </div>
           </header>
 
-          <div className="max-w-5xl flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
             {scan.moduleResults.map((result) => (
               <FindingCard key={result.module} result={result} />
             ))}
           </div>
 
-          <footer className="mt-24 max-w-5xl flex justify-end items-center gap-4">
+          <footer className="mt-24 flex justify-end items-center gap-4">
             <Link href="/scan/new"
               className="px-10 py-2.5 bg-charcoal text-white text-xs font-bold rounded-sm hover:opacity-90 active:scale-95 transition-all uppercase tracking-[0.15em] flex items-center gap-2">
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
               New Scan
             </Link>
           </footer>
-        </main>
-      </div>
+        </section>
+      </main>
       <Footer />
     </>
   );

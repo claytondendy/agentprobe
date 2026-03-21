@@ -76,7 +76,7 @@ export default function HowToPage() {
     <>
       <Nav />
       <main className="pt-16 min-h-screen">
-        <section className="px-8 pt-24 pb-16 max-w-4xl mx-auto">
+        <section className="px-8 pt-24 pb-32 max-w-4xl mx-auto">
           <h1 className="font-headline text-4xl font-extrabold tracking-tighter text-charcoal mb-4">How to Use AgentProbe</h1>
           <p className="text-lg text-on-surface-variant font-light max-w-2xl mb-16">
             Six steps from paste to secure. No setup, no accounts, no configuration files.
