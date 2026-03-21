@@ -15,15 +15,38 @@ export function scoreFromGrade(grade: Grade): number {
   return scores[grade];
 }
 
+const GRADE_ORDER: Grade[] = ["A", "B", "C", "D", "F"];
+
 export function computeOverallGrade(moduleResults: ModuleResult[]): { grade: Grade; score: number } {
   if (moduleResults.length === 0) return { grade: "A", score: 100 };
+
+  // Average score across modules
   const avgScore = moduleResults.reduce((sum, m) => sum + scoreFromGrade(m.grade), 0) / moduleResults.length;
-  let grade: Grade;
-  if (avgScore >= 90) grade = "A";
-  else if (avgScore >= 75) grade = "B";
-  else if (avgScore >= 60) grade = "C";
-  else if (avgScore >= 40) grade = "D";
-  else grade = "F";
+
+  // Find the worst module grade
+  const worstGrade = moduleResults.reduce((worst, m) => {
+    return GRADE_ORDER.indexOf(m.grade) > GRADE_ORDER.indexOf(worst) ? m.grade : worst;
+  }, "A" as Grade);
+
+  // The overall grade is capped: it can never be more than one step above the worst module.
+  // If any module is F, overall can't be above D.
+  // If any module is D, overall can't be above C.
+  let gradeFromAvg: Grade;
+  if (avgScore >= 90) gradeFromAvg = "A";
+  else if (avgScore >= 75) gradeFromAvg = "B";
+  else if (avgScore >= 60) gradeFromAvg = "C";
+  else if (avgScore >= 40) gradeFromAvg = "D";
+  else gradeFromAvg = "F";
+
+  const worstIdx = GRADE_ORDER.indexOf(worstGrade);
+  const capIdx = Math.max(0, worstIdx - 1); // one step above worst
+  const cappedGrade = GRADE_ORDER[capIdx];
+
+  // Take the worse of the average grade and the capped grade
+  const avgIdx = GRADE_ORDER.indexOf(gradeFromAvg);
+  const finalIdx = Math.max(avgIdx, capIdx);
+  const grade = GRADE_ORDER[finalIdx];
+
   return { grade, score: Math.round(avgScore) };
 }
 
