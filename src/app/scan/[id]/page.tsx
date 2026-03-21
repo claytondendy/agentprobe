@@ -11,27 +11,50 @@ import { ScanResult } from "@/lib/types";
 export default function ScanResultsPage() {
   const { id } = useParams<{ id: string }>();
   const [scan, setScan] = useState<ScanResult | null>(null);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     const poll = async () => {
       const res = await fetch(`/api/scan/${id}`);
-      if (res.ok) {
-        const data = await res.json();
-        setScan(data);
-        if (data.status === "running") {
-          setTimeout(poll, 2000);
-        }
+      if (!res.ok) {
+        setNotFound(true);
+        return;
+      }
+      const data = await res.json();
+      setScan(data);
+      if (data.status === "running") {
+        setTimeout(poll, 2000);
       }
     };
     poll();
   }, [id]);
+
+  if (notFound) {
+    return (
+      <>
+        <Nav />
+        <div className="flex pt-16 min-h-screen items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <span className="material-symbols-outlined text-on-surface-variant" style={{ fontSize: 48 }}>search_off</span>
+            <p className="text-sm text-on-surface-variant">Scan not found. It may have expired after a server restart.</p>
+            <Link href="/scan/new" className="px-6 py-2.5 bg-charcoal text-white text-xs font-bold rounded-sm uppercase tracking-widest">
+              New Scan
+            </Link>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   if (!scan) {
     return (
       <>
         <Nav />
         <div className="flex pt-16 min-h-screen items-center justify-center">
-          <p className="text-sm text-on-surface-variant">Loading...</p>
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 border-2 border-hairline border-t-charcoal rounded-full animate-spin" />
+            <p className="text-sm text-on-surface-variant">Loading results...</p>
+          </div>
         </div>
       </>
     );
