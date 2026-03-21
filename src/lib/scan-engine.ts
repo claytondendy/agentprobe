@@ -91,7 +91,7 @@ export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressE
         succeeded: true,
         severity: f.pattern.severity,
         explanation: `${f.pattern.name} detected in system prompt`,
-        remediation: "Remove sensitive data from system prompt. Use environment variables or secure vaults.",
+        remediation: (f.pattern as { remediation?: string }).remediation || "Remove this from your system prompt. Use environment variables or secure configuration for sensitive values.",
       }));
 
       if (probeResults.length === 0) {
