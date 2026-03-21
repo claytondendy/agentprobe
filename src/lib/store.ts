@@ -1,6 +1,11 @@
 import { ScanConfig, ScanResult, ModuleResult, ScanProgressEvent } from "./types";
 import { computeOverallGrade, countFindings } from "./grader";
 
+export function updateProgress(id: string, progress: number) {
+  const scan = scans.get(id);
+  if (scan) scan.progress = progress;
+}
+
 const scans = new Map<string, ScanResult>();
 const eventLogs = new Map<string, ScanProgressEvent[]>();
 
@@ -16,6 +21,7 @@ export function createScan(config: ScanConfig): ScanResult {
     passed: 0,
     warnings: 0,
     criticalFailures: 0,
+    progress: 0,
     startedAt: new Date().toISOString(),
   };
   scans.set(config.id, result);

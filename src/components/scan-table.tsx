@@ -50,10 +50,15 @@ export function ScanTable({ scans }: { scans: ScanResult[] }) {
                 <td className="py-6 px-4 text-xs text-on-surface-variant">{modeLabels[scan.config.mode] || scan.config.mode}</td>
                 <td className="py-6 px-4">
                   {isRunning ? (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                      Running
-                    </span>
+                    <div>
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                        <span className="text-xs font-medium text-amber-600">{scan.progress}%</span>
+                      </div>
+                      <div className="w-24 h-1 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-amber-500 rounded-full transition-all duration-500" style={{ width: `${scan.progress}%` }} />
+                      </div>
+                    </div>
                   ) : scan.status === "complete" ? (
                     <span className="text-xs font-medium text-emerald-600">Complete</span>
                   ) : (
@@ -62,7 +67,10 @@ export function ScanTable({ scans }: { scans: ScanResult[] }) {
                 </td>
                 <td className="py-6 px-4">
                   {isRunning ? (
-                    <span className="text-xs text-on-surface-variant">...</span>
+                    <div className="flex gap-3">
+                      <span className="text-xs text-emerald-600 font-medium">{scan.passed} <span className="text-on-surface-variant font-normal">passed</span></span>
+                      {vulnCount > 0 && <span className="text-xs text-red-600 font-medium">{vulnCount} <span className="text-on-surface-variant font-normal">failed</span></span>}
+                    </div>
                   ) : vulnCount > 0 ? (
                     <span className="text-xs font-bold text-red-600">{vulnCount} found</span>
                   ) : (

@@ -66,6 +66,7 @@ export interface ScanResult {
   passed: number;
   warnings: number;
   criticalFailures: number;
+  progress: number;
   startedAt: string;
   completedAt?: string;
 }

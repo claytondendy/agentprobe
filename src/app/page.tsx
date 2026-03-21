@@ -16,7 +16,15 @@ export default function Dashboard() {
   const [scans, setScans] = useState<ScanResult[]>([]);
 
   useEffect(() => {
-    fetch("/api/scan").then((r) => r.json()).then(setScans).catch(() => {});
+    const poll = () => {
+      fetch("/api/scan").then((r) => r.json()).then((data) => {
+        setScans(data);
+        if (data.some((s: ScanResult) => s.status === "running")) {
+          setTimeout(poll, 2000);
+        }
+      }).catch(() => {});
+    };
+    poll();
   }, []);
 
   return (
