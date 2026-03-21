@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
@@ -10,7 +10,6 @@ import { ScanResult } from "@/lib/types";
 
 export default function ScanResultsPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const [scan, setScan] = useState<ScanResult | null>(null);
 
   useEffect(() => {
@@ -18,16 +17,14 @@ export default function ScanResultsPage() {
       const res = await fetch(`/api/scan/${id}`);
       if (res.ok) {
         const data = await res.json();
-        if (data.status === "running") {
-          // Still running: redirect to progress page
-          router.replace(`/scan/${id}/progress`);
-          return;
-        }
         setScan(data);
+        if (data.status === "running") {
+          setTimeout(poll, 2000);
+        }
       }
     };
     poll();
-  }, [id, router]);
+  }, [id]);
 
   if (!scan) {
     return (
