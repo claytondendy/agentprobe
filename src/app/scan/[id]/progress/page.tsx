@@ -36,7 +36,24 @@ export default function ScanProgressPage() {
     eventSource.onmessage = (event) => {
       if (event.data === "[DONE]") {
         eventSource.close();
-        setTimeout(() => router.push(`/scan/${id}`), 1000);
+        setCurrentProbe("Scan complete. Loading report...");
+        setProgress(100);
+        // Pre-fetch results, then navigate
+        const waitForResults = async () => {
+          for (let i = 0; i < 10; i++) {
+            const res = await fetch(`/api/scan/${id}`);
+            if (res.ok) {
+              const data = await res.json();
+              if (data.status !== "running") {
+                router.replace(`/scan/${id}`);
+                return;
+              }
+            }
+            await new Promise((r) => setTimeout(r, 500));
+          }
+          router.replace(`/scan/${id}`);
+        };
+        waitForResults();
         return;
       }
       try {
@@ -44,7 +61,7 @@ export default function ScanProgressPage() {
         if (data.type === "error") {
           setCurrentProbe(`Error: ${data.message}`);
           eventSource.close();
-          setTimeout(() => router.push(`/scan/${id}`), 3000);
+          setTimeout(() => router.replace(`/scan/${id}`), 3000);
           return;
         }
         setProgress(data.progress || 0);
@@ -72,7 +89,7 @@ export default function ScanProgressPage() {
     eventSource.onerror = () => {
       eventSource.close();
       setCurrentProbe("Connection lost. Redirecting...");
-      setTimeout(() => router.push(`/scan/${id}`), 2000);
+      setTimeout(() => router.replace(`/scan/${id}`), 2000);
     };
     return () => eventSource.close();
   }, [id, router]);
