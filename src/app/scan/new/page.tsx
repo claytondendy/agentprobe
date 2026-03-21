@@ -1,11 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { ScanMode } from "@/lib/types";
 
 export default function NewScanPage() {
+  return (
+    <Suspense>
+      <NewScanForm />
+    </Suspense>
+  );
+}
+
+function NewScanForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialMode = (searchParams.get("mode") as ScanMode) || "prompt";
