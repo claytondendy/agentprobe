@@ -92,7 +92,7 @@ export default function ScanResultsPage() {
       <Nav />
       <main className="pt-16 min-h-screen">
         <section className="px-8 pt-24 pb-32 max-w-4xl mx-auto">
-          <header className="mb-16">
+          <header className="mb-8">
             <div className="flex items-center gap-8">
               <GradeBadge grade={scan.overallGrade} size="lg" />
               <div>
@@ -112,13 +112,13 @@ export default function ScanResultsPage() {
             </div>
           </header>
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             {scan.moduleResults.map((result) => (
               <FindingCard key={result.module} result={result} />
             ))}
           </div>
 
-          <footer className="mt-24 flex justify-end items-center gap-4">
+          <footer className="mt-12 flex justify-end items-center gap-4">
             <Link href="/scan/new"
               className="px-10 py-2.5 bg-charcoal text-white text-xs font-bold rounded-sm hover:opacity-90 active:scale-95 transition-all uppercase tracking-[0.15em] flex items-center gap-2">
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
