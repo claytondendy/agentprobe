@@ -1,22 +1,22 @@
-import { ScanConfig, ModuleResult, ProbeResult, ScanModule, Probe, ScanProgressEvent } from "./types";
-import { promptInjectionProbes } from "./probes/prompt-injection";
-import { dataExfiltrationProbes } from "./probes/data-exfiltration";
-import { jailbreakProbes } from "./probes/jailbreak";
-import { excessiveAgencyProbes } from "./probes/excessive-agency";
-import { analyzeSensitiveData } from "./probes/sensitive-data";
-import { misinformationProbes } from "./probes/misinformation";
+import { ScanConfig, ModuleResult, ProbeResult, ScanModule, ScanProgressEvent } from "./types";
+import { analyzeSensitiveData, sensitiveDataPatterns } from "./probes/sensitive-data";
 import { analyzeMcpConfig } from "./mcp-analyzer";
-import { simulateAndEvaluate } from "./evaluator";
+import { reviewPromptForModule } from "./evaluator";
 import { gradeModule } from "./grader";
 
-const CONCURRENCY = 5; // Run 5 probes at once
+const CONCURRENCY = 3; // AI review calls in parallel
 
-const MODULE_PROBES: Record<ScanModule, Probe[]> = {
-  "prompt-injection": [...promptInjectionProbes, ...misinformationProbes],
-  "data-exfiltration": dataExfiltrationProbes,
-  "jailbreak": jailbreakProbes,
-  "excessive-agency": excessiveAgencyProbes,
-  "sensitive-data": [],
+// Map SAST pattern categories to scan modules
+const CATEGORY_TO_MODULE: Record<string, ScanModule> = {
+  "Secrets": "sensitive-data",
+  "Prompt Injection": "prompt-injection",
+  "Confirmation Bypass": "excessive-agency",
+  "Destructive Commands": "excessive-agency",
+  "External URLs": "data-exfiltration",
+  "Sensitive Files": "sensitive-data",
+  "Unbounded Access": "excessive-agency",
+  "Disabled Controls": "excessive-agency",
+  "Supply Chain": "sensitive-data",
 };
 
 const MODULE_LABELS: Record<ScanModule, string> = {
@@ -27,20 +27,10 @@ const MODULE_LABELS: Record<ScanModule, string> = {
   "sensitive-data": "Sensitive Data Exposure",
 };
 
-// Single API call per probe: simulate the agent and evaluate the result
-async function runProbe(probe: Probe, systemPrompt: string): Promise<ProbeResult> {
-  return simulateAndEvaluate(probe, systemPrompt);
-}
-
 export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressEvent> {
   const moduleResults: ModuleResult[] = [];
-  const totalProbes = config.modules.reduce((sum, mod) => {
-    if (mod === "sensitive-data") return sum + 1;
-    return sum + (MODULE_PROBES[mod]?.length || 0);
-  }, 0);
-  let completedProbes = 0;
 
-  // Skill mode: treat skill content as a system prompt
+  // Skill mode: treat as prompt
   if (config.mode === "skill" && config.systemPrompt) {
     config = { ...config, mode: "prompt" };
   }
@@ -62,14 +52,38 @@ export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressE
     return;
   }
 
-  for (const mod of config.modules) {
-    // Static analysis for sensitive data (instant)
-    if (mod === "sensitive-data" && config.systemPrompt) {
-      const findings = analyzeSensitiveData(config.systemPrompt);
-      const probeResults: ProbeResult[] = findings.map((f) => ({
+  if (!config.systemPrompt) {
+    yield { type: "scan-complete", message: "No content to scan.", progress: 100 };
+    return;
+  }
+
+  const modules = config.modules;
+  const totalSteps = modules.length * 2; // SAST + AI review per module
+  let completedSteps = 0;
+
+  // ============================================================
+  // Phase 1: SAST (Static Analysis) - instant, pattern matching
+  // Route each finding to its proper module
+  // ============================================================
+  yield { type: "probe-start", message: "Running static analysis...", progress: 0 };
+
+  const allFindings = analyzeSensitiveData(config.systemPrompt);
+
+  // Group SAST findings by module
+  const sastByModule = new Map<ScanModule, ProbeResult[]>();
+  for (const mod of modules) {
+    sastByModule.set(mod, []);
+  }
+
+  for (const f of allFindings) {
+    const category = (f.pattern as { category?: string }).category || "Secrets";
+    const targetModule = CATEGORY_TO_MODULE[category] || "sensitive-data";
+
+    if (sastByModule.has(targetModule)) {
+      sastByModule.get(targetModule)!.push({
         probe: {
           id: f.pattern.id,
-          module: "sensitive-data" as ScanModule,
+          module: targetModule,
           name: f.pattern.name,
           attackPrompt: "(static analysis)",
           owaspRef: f.pattern.owaspRef,
@@ -77,84 +91,79 @@ export async function* runScan(config: ScanConfig): AsyncGenerator<ScanProgressE
         response: `Found: ${f.match}`,
         succeeded: true,
         severity: f.pattern.severity,
-        explanation: `[${(f.pattern as { category?: string }).category || "Detection"}] ${f.pattern.name}`,
-        remediation: (f.pattern as { remediation?: string }).remediation || "Remove this from your system prompt.",
-      }));
+        explanation: `[${category}] ${f.pattern.name}`,
+        remediation: (f.pattern as { remediation?: string }).remediation || "Review and address this finding.",
+      });
+    }
+  }
 
-      if (probeResults.length === 0) {
-        probeResults.push({
-          probe: { id: "sd-pass", module: "sensitive-data", name: "No sensitive data found", attackPrompt: "(static analysis)" },
+  yield {
+    type: "probe-complete",
+    message: `Static analysis: ${allFindings.length} issue${allFindings.length !== 1 ? "s" : ""} found`,
+    progress: Math.round((1 / totalSteps) * 100),
+  };
+
+  // ============================================================
+  // Phase 2: AI Review - Claude reads the prompt and flags issues
+  // Runs in parallel across modules
+  // ============================================================
+  yield { type: "probe-start", message: "Running AI security review...", progress: Math.round((1 / totalSteps) * 100) };
+
+  // Run AI reviews in parallel batches
+  for (let i = 0; i < modules.length; i += CONCURRENCY) {
+    const batch = modules.slice(i, i + CONCURRENCY);
+
+    const reviews = await Promise.all(
+      batch.map(async (mod) => {
+        const label = MODULE_LABELS[mod] || mod;
+        try {
+          const aiFindings = await reviewPromptForModule(mod, label, config.systemPrompt!);
+          return { mod, aiFindings };
+        } catch (err) {
+          console.error(`AI review failed for ${mod}:`, err);
+          return { mod, aiFindings: [] };
+        }
+      })
+    );
+
+    for (const { mod, aiFindings } of reviews) {
+      completedSteps++;
+      const label = MODULE_LABELS[mod] || mod;
+
+      // Combine SAST + AI findings for this module
+      const sastFindings = sastByModule.get(mod) || [];
+      const allModuleFindings = [...sastFindings, ...aiFindings];
+
+      // If no findings at all, add a pass
+      if (allModuleFindings.length === 0) {
+        allModuleFindings.push({
+          probe: { id: `pass-${mod}`, module: mod, name: `No ${label.toLowerCase()} issues found`, attackPrompt: "(analysis)" },
           response: "Clean",
           succeeded: false,
           severity: "info",
-          explanation: "No sensitive data patterns detected in system prompt",
+          explanation: `No ${label.toLowerCase()} vulnerabilities detected`,
           remediation: "None needed",
         });
       }
 
-      completedProbes++;
+      const succeeded = allModuleFindings.filter((r) => r.succeeded).length;
       const moduleResult: ModuleResult = {
         module: mod,
-        label: MODULE_LABELS[mod],
-        grade: gradeModule(probeResults.filter((r) => r.succeeded).length, probeResults.length),
-        probeResults,
-        attacksSucceeded: probeResults.filter((r) => r.succeeded).length,
-        totalAttacks: probeResults.length,
+        label,
+        grade: gradeModule(succeeded, allModuleFindings.length),
+        probeResults: allModuleFindings,
+        attacksSucceeded: succeeded,
+        totalAttacks: allModuleFindings.length,
       };
       moduleResults.push(moduleResult);
-      yield { type: "module-complete", message: `${MODULE_LABELS[mod]}: ${moduleResult.grade}`, moduleResult, progress: Math.round((completedProbes / totalProbes) * 100) };
-      continue;
+
+      yield {
+        type: "module-complete",
+        message: `${label}: ${moduleResult.grade} (${succeeded} issue${succeeded !== 1 ? "s" : ""})`,
+        moduleResult,
+        progress: Math.round(((completedSteps + modules.length) / totalSteps) * 100),
+      };
     }
-
-    // Conversational probes: run in parallel batches
-    const probes = MODULE_PROBES[mod] || [];
-    const probeResults: ProbeResult[] = [];
-
-    if (!config.systemPrompt) {
-      completedProbes += probes.length;
-      continue;
-    }
-
-    // Announce all probes starting
-    yield {
-      type: "probe-start",
-      message: `Testing ${MODULE_LABELS[mod]} (${probes.length} probes, ${CONCURRENCY} parallel)...`,
-      progress: Math.round((completedProbes / totalProbes) * 100),
-    };
-
-    // Process probes in batches of CONCURRENCY
-    for (let i = 0; i < probes.length; i += CONCURRENCY) {
-      const batch = probes.slice(i, i + CONCURRENCY);
-
-      // Run batch in parallel
-      const batchResults = await Promise.all(
-        batch.map((probe) => runProbe(probe, config.systemPrompt!))
-      );
-
-      // Emit results for each probe in the batch
-      for (const result of batchResults) {
-        probeResults.push(result);
-        completedProbes++;
-
-        yield {
-          type: "probe-complete",
-          message: `${result.probe.name}: ${result.succeeded ? "VULNERABLE" : "PASSED"}`,
-          probeResult: result,
-          progress: Math.round((completedProbes / totalProbes) * 100),
-        };
-      }
-    }
-
-    const moduleResult: ModuleResult = {
-      module: mod,
-      label: MODULE_LABELS[mod],
-      grade: gradeModule(probeResults.filter((r) => r.succeeded).length, probeResults.length),
-      probeResults,
-      attacksSucceeded: probeResults.filter((r) => r.succeeded).length,
-      totalAttacks: probeResults.length,
-    };
-    moduleResults.push(moduleResult);
-    yield { type: "module-complete", message: `${MODULE_LABELS[mod]}: ${moduleResult.grade}`, moduleResult, progress: Math.round((completedProbes / totalProbes) * 100) };
   }
 
   yield { type: "scan-complete", message: "Scan complete.", progress: 100 };
