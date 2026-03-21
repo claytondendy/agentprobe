@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 
-const words = ["Agents", "Skills", "Tools"];
+const words = ["Agents", "Skills", "MCP"];
 const TYPING_SPEED = 100;
 const DELETING_SPEED = 60;
 const PAUSE_AFTER_TYPE = 2000;
