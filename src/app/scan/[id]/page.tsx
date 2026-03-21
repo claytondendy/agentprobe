@@ -14,12 +14,20 @@ export default function ScanResultsPage() {
   const [scan, setScan] = useState<ScanResult | null>(null);
 
   useEffect(() => {
+    let attempts = 0;
     const poll = async () => {
       const res = await fetch(`/api/scan/${id}`);
       if (res.ok) {
         const data = await res.json();
         setScan(data);
         if (data.status === "running") {
+          attempts++;
+          // If still running after 15 polls (30s) with no results, show what we have
+          if (attempts > 15 && data.moduleResults.length === 0) {
+            data.status = "failed";
+            setScan({ ...data, status: "failed" });
+            return;
+          }
           setTimeout(poll, 2000);
         }
       }
@@ -70,6 +78,33 @@ export default function ScanResultsPage() {
             </div>
 
             <p className="text-sm text-on-surface-variant font-medium animate-pulse">Analyzing results...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (scan.status === "failed" && scan.moduleResults.length === 0) {
+    return (
+      <>
+        <Nav />
+        <div className="flex pt-16 min-h-screen items-center justify-center">
+          <div className="flex flex-col items-center gap-6 max-w-md text-center">
+            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center">
+              <span className="material-symbols-outlined text-red-600" style={{ fontSize: 32 }}>error</span>
+            </div>
+            <h2 className="font-headline text-xl font-bold text-charcoal">Scan Failed</h2>
+            <p className="text-sm text-on-surface-variant leading-relaxed">
+              The scan could not complete. This usually means the Anthropic API key is missing or invalid, or the API returned an error. Check the server console for details.
+            </p>
+            <div className="flex gap-4">
+              <Link href="/scan/new" className="px-6 py-2.5 bg-charcoal text-white text-xs font-bold rounded-sm hover:opacity-90 active:scale-95 transition-all uppercase tracking-widest">
+                Try Again
+              </Link>
+              <Link href="/" className="px-6 py-2.5 border-[0.5px] border-hairline bg-white text-charcoal text-xs font-bold rounded-sm hover:bg-slate-50 uppercase tracking-widest">
+                Dashboard
+              </Link>
+            </div>
           </div>
         </div>
       </>

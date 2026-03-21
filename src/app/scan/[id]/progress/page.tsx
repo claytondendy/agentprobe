@@ -23,8 +23,14 @@ export default function ScanProgressPage() {
       }
       try {
         const data = JSON.parse(event.data);
+        if (data.type === "error") {
+          setMessages((prev) => [...prev, `ERROR: ${data.message}`]);
+          eventSource.close();
+          setTimeout(() => router.push(`/scan/${id}`), 3000);
+          return;
+        }
         setProgress(data.progress || 0);
-        setMessages((prev) => [...prev, data.message]);
+        if (data.message) setMessages((prev) => [...prev, data.message]);
       } catch {
         // Skip malformed events
       }

@@ -13,6 +13,13 @@ export async function GET(
     return new Response("Scan not found", { status: 404 });
   }
 
+  // Don't re-run completed or failed scans
+  if (scan.status !== "running") {
+    return new Response(`data: ${JSON.stringify({ type: "scan-complete", message: "Scan already finished.", progress: 100 })}\n\ndata: [DONE]\n\n`, {
+      headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" },
+    });
+  }
+
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
@@ -27,7 +34,15 @@ export async function GET(
         completeScan(id);
         controller.enqueue(encoder.encode("data: [DONE]\n\n"));
       } catch (err) {
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", message: String(err) })}\n\n`));
+        const errorMsg = String(err);
+        console.error("Scan error:", errorMsg);
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", message: errorMsg, progress: 0 })}\n\n`));
+        // Mark scan as failed so results page doesn't hang
+        const failedScan = getScan(id);
+        if (failedScan) {
+          failedScan.status = "failed";
+          failedScan.completedAt = new Date().toISOString();
+        }
       } finally {
         controller.close();
       }
