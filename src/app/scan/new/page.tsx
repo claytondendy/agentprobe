@@ -47,14 +47,6 @@ export default function NewScanPage() {
             <div className="bg-white hairline-border rounded-sm p-8">
               <form onSubmit={handleSubmit} className="space-y-8" noValidate>
                 <div>
-                  <label className="block text-sm font-medium text-charcoal mb-2">Agent Name</label>
-                  <input type="text" value={name} onChange={(e) => { setName(e.target.value); setError(""); }}
-                    placeholder="e.g., Customer Service Bot v2"
-                    className="w-full md:w-1/2 rounded-sm border-hairline shadow-sm focus:border-charcoal focus:ring-charcoal text-sm py-2 px-3" />
-                  {error && <p className="text-xs text-red-600 mt-2">{error}</p>}
-                </div>
-
-                <div>
                   <label className="block text-sm font-medium text-charcoal mb-3">Scan Mode</label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {([
@@ -141,6 +133,14 @@ export default function NewScanPage() {
                       className="w-full rounded-sm border-hairline shadow-sm focus:border-charcoal focus:ring-charcoal text-sm py-2 px-3 font-mono" />
                   </div>
                 )}
+
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-2">Scan Name</label>
+                  <input type="text" value={name} onChange={(e) => { setName(e.target.value); setError(""); }}
+                    placeholder="e.g., Customer Service Bot v2"
+                    className="w-full md:w-1/2 rounded-sm border-hairline shadow-sm focus:border-charcoal focus:ring-charcoal text-sm py-2 px-3" />
+                  {error && <p className="text-xs text-red-600 mt-2">{error}</p>}
+                </div>
 
                 <div className="pt-4 flex gap-4">
                   <button type="submit" disabled={submitting}
