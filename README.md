@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AgentProbe
 
-## Getting Started
+AgentProbe is a security scanner for AI agents. It runs attacks against an agent's system prompt, its live endpoint or its MCP tool set, then grades each risk area from A to F and maps every finding to OWASP and CoSAI guidance.
 
-First, run the development server:
+I built it in March 2026 as a prototype. It comes from my work as a cyber assurance and IT audit consultant: clients ask how to test the controls around their AI agents, and few tools answer that in audit terms.
+
+## What it tests
+
+| Scan mode | What it does |
+|---|---|
+| System prompt review | Sends adversarial probes against a system prompt and runs static checks for secrets, sensitive data and disabled controls in the prompt text. |
+| Live agent red team | Sends the same probes to a running agent endpoint and judges each response. |
+| MCP permission audit | Reads an MCP tool list and flags dangerous tools (send, delete, execute, network, agent spawning) and dangerous combinations, such as read plus send (a data exfiltration path). |
+
+Probe modules: prompt injection, jailbreak, data exfiltration, excessive agency, misinformation and sensitive data. There are 20 attack probes and 47 static checks.
+
+Each module maps to the OWASP Top 10 for Agentic Applications (2026), the OWASP Top 10 for LLM Applications (2025) and the CoSAI MCP security guidance.
+
+## How it works
+
+- `src/lib/probes/`: the attack probes, one file per module.
+- `src/lib/evaluator.ts`: a Claude model judges whether each attack succeeded.
+- `src/lib/mcp-analyzer.ts`: the rule-based MCP tool and tool-combination checks.
+- `src/lib/grader.ts`: a module's grade comes from its attack success rate (0% is A, above 60% is F). The overall grade is held down by the worst module.
+- Scan progress streams to the browser with server-sent events.
+
+Stack: Next.js, TypeScript, Tailwind and the Anthropic SDK.
+
+## Run it
 
 ```bash
+npm install
+export ANTHROPIC_API_KEY=...
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 and start a scan.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Limits
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This is a prototype. Scans are kept in memory, the probe set is small, and an LLM judge can be wrong. Treat results as leads to check, not as an audit opinion.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Clayton Dendy, CPA. [caloa.ca](https://www.caloa.ca)
